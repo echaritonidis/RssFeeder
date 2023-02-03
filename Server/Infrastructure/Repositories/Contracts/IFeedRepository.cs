@@ -1,0 +1,13 @@
+﻿using System;
+using RssFeeder.Server.Infrastructure.Dto;
+
+namespace RssFeeder.Server.Infrastructure.Repositories.Contracts
+{
+	public interface IFeedRepository
+	{
+        public Task<List<FeedDto>> GetAllFeeds(CancellationToken cancellationToken);
+
+        public Task InsertFeed(FeedDto feed, CancellationToken cancellationToken);
+    }
+}
+

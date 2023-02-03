@@ -1,0 +1,21 @@
+﻿@page "/"
+
+<PageTitle>Rss Feeder</PageTitle>
+
+<div class="left-panel">
+    <FeedNavView Model="@FeedNavigations" OnSelectFeedCallback="OnSelectFeed" />
+</div>
+
+<div class="right-content">
+
+    @if (ContentLoading)
+    {
+        <div class="loader">
+            <SpinKit Centered="true" Type="SpinKitType.Bounce" />
+        </div>
+    }
+    else
+    {
+        <FeedContentView Model="@FeedContents" />
+    }
+</div>
