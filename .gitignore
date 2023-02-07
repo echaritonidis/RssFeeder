@@ -3,6 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+/Server/LocalDatabase.db
+/Server/LocalDatabase.db-shm
+/Server/LocalDatabase.db-wal
+
 # Visual Studio Code
 .vscode/*
 .vscode/settings.json
@@ -118,7 +122,6 @@ ipch/
 *.opensdf
 *.sdf
 *.cachefile
-/Server/Data/
 
 # Visual Studio profiler
 *.psess

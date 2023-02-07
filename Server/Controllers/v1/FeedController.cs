@@ -1,24 +1,14 @@
-using System.Globalization;
-using System.Net.Http;
-using System.Reflection.PortableExecutable;
-using System.Security;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.Serialization;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
-using RssFeeder.Server.Infrastructure.Dto;
+using Microsoft.AspNetCore.OutputCaching;
 using RssFeeder.Server.Infrastructure.Services.Contracts;
-using RssFeeder.Server.Infrastructure.Services.Implementations;
-using RssFeeder.Shared;
 using RssFeeder.Shared.Model;
 
-namespace RssFeeder.Server.Controllers;
+namespace RssFeeder.Server.Controllers.v1;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
+[ApiVersion("1.0")]
 public class FeedController : ControllerBase
 {
     private readonly ILogger<FeedController> _logger;
@@ -40,12 +30,14 @@ public class FeedController : ControllerBase
         _httpClientFactory = httpClientFactory;
     }
 
+    [OutputCache(Duration = 900)]
     [HttpGet("GetAll")]
     public Task<List<FeedNavigation>> GetAll(CancellationToken cancellationToken = default)
     {
         return _feedService.GetAllFeeds(cancellationToken);
     }
 
+    [OutputCache(Duration = 1800)]
     [HttpGet("GetContent")]
     public async Task<List<FeedContent>> GetContent(string href, CancellationToken cancellationToken = default)
     {

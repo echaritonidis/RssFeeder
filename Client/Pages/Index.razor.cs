@@ -26,7 +26,7 @@ public partial class Index : IDisposable
     {
         _notifyEventService.EventClick += this.InvalidateFeed;
 
-        FeedNavigations = await _httpClient.GetFromJsonAsync<List<FeedNavigation>>("Feed/GetAll");
+        FeedNavigations = await _httpClient.GetFromJsonAsync<List<FeedNavigation>>("/api/v1.0/Feed/GetAll");
 
         var defaultItem = FeedNavigations.SingleOrDefault(x => x.Default);
 
@@ -50,7 +50,7 @@ public partial class Index : IDisposable
                 ["href"] = feedNavigation.Href
             };
 
-            FeedContents = await _httpClient.GetFromJsonWithParamsAsync<List<FeedContent>>("Feed/GetContent", queryParams);
+            FeedContents = await _httpClient.GetFromJsonWithParamsAsync<List<FeedContent>>("/api/v1.0/Feed/GetContent", queryParams);
         }
         finally
         {

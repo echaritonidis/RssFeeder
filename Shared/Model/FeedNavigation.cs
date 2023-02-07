@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace RssFeeder.Shared.Model;
+﻿namespace RssFeeder.Shared.Model;
 
 public class FeedNavigation
 {

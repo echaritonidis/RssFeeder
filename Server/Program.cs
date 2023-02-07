@@ -1,7 +1,6 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using RssFeeder.Server.Infrastructure.Database;
-using RssFeeder.Server.Infrastructure.Model;
 using RssFeeder.Server.Infrastructure.Repositories.Contracts;
 using RssFeeder.Server.Infrastructure.Repositories.Implementations;
 using RssFeeder.Server.Infrastructure.Services.Contracts;
@@ -9,11 +8,17 @@ using RssFeeder.Server.Infrastructure.Services.Implementations;
 using RssFeeder.Shared.Model;
 using RssFeeder.Server.Infrastructure.Validators;
 using RssFeeder.Server.Infrastructure.Utils;
+using Asp.Versioning;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddHttpClient();
+builder.Services.AddHttpClient("Default", op =>
+{
+    op.BaseAddress = new Uri("https://localhost:7165");
+    op.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddRazorPages();
@@ -29,6 +34,20 @@ builder.Services.AddTransient<IFeedService, FeedService>();
 
 builder.Services.AddTransient<IExtractContent, ExtractContent>();
 builder.Services.AddSingleton<DateRegexUtil>();
+
+// Api
+builder.Services.AddApiVersioning(opt =>
+{
+    opt.DefaultApiVersion = new ApiVersion(1, 0);
+    opt.AssumeDefaultVersionWhenUnspecified = true;
+    opt.ReportApiVersions = true;
+    opt.ApiVersionReader = ApiVersionReader.Combine
+    (
+        new UrlSegmentApiVersionReader(),
+        new HeaderApiVersionReader("x-api-version"),
+        new MediaTypeApiVersionReader("x-api-version")
+    );
+});
 
 // Validators
 builder.Services.AddScoped<IValidator<FeedNavigation>, FeedNavigationValidator>();
@@ -56,6 +75,7 @@ app.UseRouting();
 
 app.MapRazorPages();
 app.MapControllers();
+
 app.MapFallbackToFile("index.html");
 
 app.Run();

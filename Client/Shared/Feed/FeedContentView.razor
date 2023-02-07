@@ -2,7 +2,7 @@
 {
     foreach (var feedContent in Model)
     {
-        <a href="@feedContent.Link" alt="@feedContent.Title link">
+        <a href="@feedContent.Link" target="_blank">
             <h5>@feedContent.Title</h5>
             <p class="published"><i>Published on @feedContent.PubDate</i></p>
             <p class="desc">@feedContent.Description</p>

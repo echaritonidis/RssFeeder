@@ -11,6 +11,7 @@ public class DataContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // Dummy data
         //modelBuilder.Entity<Feed>().HasData
         //(
         //    new Feed() { Id = Guid.NewGuid(), Name = "Fidle", Href = "https://fiddle.xml" },
