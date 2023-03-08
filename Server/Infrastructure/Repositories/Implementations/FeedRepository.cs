@@ -19,6 +19,7 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
 
             return items.Select(x => new FeedDto
             {
+                Id = x.Id,
                 Title = x.Title,
                 Href = x.Href,
                 Default = x.Default,
@@ -51,6 +52,30 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
             };
             
             await _repository.InsertAsync(model, cancellationToken);
+        }
+
+        public async Task UpdateFeed(FeedDto feed, CancellationToken cancellationToken)
+        {
+            var item = await _repository.GetAsync(feed.Id, cancellationToken);
+
+            if (item is null) return;
+
+            item = item with
+            {
+                ModifiedAt = DateTime.UtcNow,
+                Title = feed.Title,
+                Href = feed.Href,
+                Default = feed.Default,
+                Favorite = feed.Favorite,
+                Tags = feed.Tags.Select(tag => new Tags
+                {
+                    Id = Guid.NewGuid(),
+                    Name = tag.Name,
+                    Color = tag.Color
+                }).ToList()
+            };
+            
+            await _repository.UpdateAsync(item, cancellationToken);
         }
     }
 }

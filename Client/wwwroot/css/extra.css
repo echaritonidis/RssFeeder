@@ -32,17 +32,17 @@
     float: left;
 }
 
-.feed-item {
+.feed-nav {
     padding: 2px 0;
     display: block;
 }
-    .feed-item p {
+    .feed-nav p {
         display: inline;
     }
-    .feed-item:hover {
+    .feed-nav:hover {
         cursor: pointer;
     }
-        .feed-item:hover a {
+        .feed-nav:hover a {
             color: #8941bf !important;
             text-decoration: underline !important;
         }

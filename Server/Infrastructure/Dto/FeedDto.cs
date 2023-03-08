@@ -2,6 +2,7 @@ namespace RssFeeder.Server.Infrastructure.Dto;
 
 public class FeedDto
 {
+    public Guid Id { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime ModifiedAt { get; set; }
     public string Title { get; set; }

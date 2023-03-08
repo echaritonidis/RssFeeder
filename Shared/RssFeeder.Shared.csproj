@@ -15,7 +15,6 @@
     <None Remove="Microsoft.AspNetCore.WebUtilities" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Extensions\" />
     <Folder Include="Model\" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,4 @@
-﻿using System;
-using RssFeeder.Server.Infrastructure.Dto;
+﻿using RssFeeder.Server.Infrastructure.Dto;
 
 namespace RssFeeder.Server.Infrastructure.Repositories.Contracts
 {
@@ -8,6 +7,8 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Contracts
         public Task<List<FeedDto>> GetAllFeeds(CancellationToken cancellationToken);
 
         public Task InsertFeed(FeedDto feed, CancellationToken cancellationToken);
+
+        public Task UpdateFeed(FeedDto feed, CancellationToken cancellationToken);
     }
 }
 

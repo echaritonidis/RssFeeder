@@ -2,7 +2,7 @@
 {
     foreach (var feedItem in Model)
     {
-        <div @onclick="(async (_) => await OnSelectFeedCallback.InvokeAsync(feedItem))" class="feed-item">
+        <div class="feed-nav" @onclick="(async (_) => await OnSelectFeedCallback.InvokeAsync(feedItem))">
             <p>@feedItem.Title</p>
             <Icon Class="@(feedItem.Default ? "nav-icon default-icon-checked" : "nav-icon")" Name="IconName.Desktop" Float="Float.End" Clicked="((_) => OnDefaultToggle(feedItem))" />
             <Icon Class="@(feedItem.Favorite ? "nav-icon favorite-icon-checked" : "nav-icon")" Name="IconName.Star" Float="Float.End" Clicked="((_) => OnFavoriteToggle(feedItem))" />

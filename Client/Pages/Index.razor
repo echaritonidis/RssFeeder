@@ -3,7 +3,10 @@
 <PageTitle>Rss Feeder</PageTitle>
 
 <div class="left-panel">
-    <FeedNavView Model="@FeedNavigations" OnSelectFeedCallback="OnSelectFeed" />
+    <FeedNavView Model="@FeedNavigations"
+                 OnSelectFeedCallback="OnSelectFeed"
+                 OnDefaultChangeCallback="OnDefaultToggle"
+                 OnFavoriteChangeCallback="OnFavoriteToggle" />
 </div>
 
 <div class="right-content">

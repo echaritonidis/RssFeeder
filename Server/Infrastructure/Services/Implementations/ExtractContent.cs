@@ -1,8 +1,7 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 using RssFeeder.Server.Infrastructure.Services.Contracts;
 using RssFeeder.Server.Infrastructure.Utils;
+using RssFeeder.Shared.Extensions;
 using RssFeeder.Shared.Model;
 
 namespace RssFeeder.Server.Infrastructure.Services.Implementations
@@ -27,7 +26,14 @@ namespace RssFeeder.Server.Infrastructure.Services.Implementations
 
             foreach (var item in items)
             {
-                var pubDate = ((string)item.Element("pubDate"));
+                var link = item.GetElement("link");
+
+                if (string.IsNullOrEmpty(link))
+                {
+                    link = item.GetElement("guid");
+                }
+
+                var pubDate = item.GetElement("pubDate");
                 var match = _dateRegexUtil.IsMatch(pubDate);
 
                 if (match.Success)
@@ -39,9 +45,9 @@ namespace RssFeeder.Server.Infrastructure.Services.Implementations
                 (
                     new FeedContent
                     {
-                        Title = ((string)item.Element("title")),
-                        Link = ((string)item.Element("link")),
-                        Description = ((string)item.Element("description")),
+                        Title = item.GetElement("title"),
+                        Link = link,
+                        Description = item.GetElement("description"),
                         PubDate = pubDate
                     }
                 );

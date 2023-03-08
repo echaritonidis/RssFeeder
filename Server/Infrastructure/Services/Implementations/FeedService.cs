@@ -20,6 +20,7 @@ public class FeedService : IFeedService
 
         return items.Select(x => new FeedNavigation
         {
+            Id = x.Id,
             Href = x.Href,
             Title = x.Title,
             Tags = x.Tags?.Select(tag => new FeedTag
@@ -36,6 +37,24 @@ public class FeedService : IFeedService
     {
         await _feedRepository.InsertFeed(new FeedDto
         {
+            Id = feedNavigation.Id,
+            Href = feedNavigation.Href,
+            Title = feedNavigation.Title,
+            Tags = feedNavigation.Tags?.Select(tag => new TagsDto
+            {
+                Name = tag.Name,
+                Color = tag.Color
+            }).ToList() ?? new(),
+            Favorite = feedNavigation.Favorite,
+            Default = feedNavigation.Default
+        }, cancellationToken);
+    }
+
+    public async Task UpdateFeed(FeedNavigation feedNavigation, CancellationToken cancellationToken)
+    {
+        await _feedRepository.UpdateFeed(new FeedDto
+        {
+            Id = feedNavigation.Id,
             Href = feedNavigation.Href,
             Title = feedNavigation.Title,
             Tags = feedNavigation.Tags?.Select(tag => new TagsDto

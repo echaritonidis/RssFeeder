@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using RssFeeder.Client.Events;
 using RssFeeder.Shared.Extensions;
 using RssFeeder.Shared.Model;
@@ -8,12 +9,12 @@ namespace RssFeeder.Client.Pages;
 
 public partial class Index : IDisposable
 {
-    [Inject] public HttpClient _httpClient { get; set; }
+    [Inject] public IJSRuntime _jsRuntime { get; set; } = default!;
+    [Inject] public HttpClient _httpClient { get; set; } = default!;
+    [Inject] public NotifyEventService _notifyEventService { get; set; } = default!;
 
-    [Inject] public NotifyEventService _notifyEventService { get; set; }
-
-    protected List<FeedNavigation> FeedNavigations { get; set; }
-    protected List<FeedContent> FeedContents { get; set; }
+    public List<FeedNavigation> FeedNavigations { get; set; } = default!;
+    public List<FeedContent> FeedContents { get; set; } = default!;
 
     protected bool ContentLoading { get; set; }
 
@@ -26,16 +27,28 @@ public partial class Index : IDisposable
     {
         _notifyEventService.EventClick += this.InvalidateFeed;
 
-        FeedNavigations = await _httpClient.GetFromJsonAsync<List<FeedNavigation>>("/api/v1.0/Feed/GetAll");
+        await LoadData();
+    }
 
-        var defaultItem = FeedNavigations.SingleOrDefault(x => x.Default);
+    protected async Task LoadData()
+    {
+        var response = await _httpClient.GetAsync("/api/v1.0/Feed/GetAll");
 
-        if (defaultItem != null) OnSelectFeed(defaultItem);
+        if (response.IsSuccessStatusCode)
+        {
+            FeedNavigations = await response.Content.ReadFromJsonAsync<List<FeedNavigation>>();
+
+            if (FeedNavigations != null)
+            {
+                var defaultItem = FeedNavigations.SingleOrDefault(x => x.Default);
+                if (defaultItem != null) await OnSelectFeed(defaultItem);
+            }
+        }
     }
 
     protected void InvalidateFeed(object? sender, EventArgs e)
     {
-        FeedNavigations.Add((FeedNavigation)sender);
+        FeedNavigations.Add((FeedNavigation)sender!);
         this.InvokeAsync(StateHasChanged);
     }
 
@@ -58,6 +71,30 @@ public partial class Index : IDisposable
         }
 
         StateHasChanged();
+    }
+
+    protected async Task OnDefaultToggle(FeedNavigation feedNavigation)
+    {
+        // TODO: Add single action to update those bools instead of whole object
+        await _httpClient.PutAsJsonAsync("/api/v1.0/Feed/Update", feedNavigation);
+    }
+
+    protected async Task OnFavoriteToggle(FeedNavigation feedNavigation)
+    {
+        // TODO: Add single action to update those bools instead of whole object
+        await _httpClient.PutAsJsonAsync("/api/v1.0/Feed/Update", feedNavigation);
+    }
+
+    protected async Task ExportExcel()
+    {
+        var result = await _httpClient.PostAsJsonAsync("/api/v1.0/Feed/ExportExcel", FeedContents);
+
+        if (result.IsSuccessStatusCode)
+        {
+            var content = await result.Content.ReadAsStringAsync();
+
+            await _jsRuntime.InvokeAsync<object>("saveFile", "file.xlsx", content);
+        }
     }
 }
 
