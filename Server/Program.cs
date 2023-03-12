@@ -9,6 +9,7 @@ using RssFeeder.Shared.Model;
 using RssFeeder.Server.Infrastructure.Validators;
 using RssFeeder.Server.Infrastructure.Utils;
 using Asp.Versioning;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,10 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddRazorPages();
 
+builder.Services
+    .AddFluentValidationAutoValidation()
+    .AddFluentValidationClientsideAdapters();
+
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -34,6 +39,7 @@ builder.Services.AddTransient<IFeedService, FeedService>();
 
 builder.Services.AddTransient<IExtractContent, ExtractContent>();
 builder.Services.AddSingleton<DateRegexUtil>();
+builder.Services.AddSingleton<LinkRegexUtil>();
 
 // Api
 builder.Services.AddApiVersioning(opt =>

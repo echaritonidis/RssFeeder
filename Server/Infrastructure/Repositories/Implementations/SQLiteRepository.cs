@@ -28,10 +28,12 @@ public class SQLiteRepository<TEntity> : ISQLiteRepository<TEntity> where TEntit
         return _entitySet.AsNoTracking().ToListAsync(cancellationToken);
     }
 
-    public async Task InsertAsync(TEntity obj, CancellationToken cancellationToken)
+    public async Task<Guid> InsertAsync(TEntity obj, CancellationToken cancellationToken)
     {
         await _entitySet.AddAsync(obj);
         await _dataContext.SaveChangesAsync(cancellationToken);
+
+        return obj.Id;
     }
 
     public async Task UpdateAsync(TEntity obj, CancellationToken cancellationToken)

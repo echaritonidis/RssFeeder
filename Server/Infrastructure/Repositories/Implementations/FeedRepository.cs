@@ -32,7 +32,7 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
             }).ToList();
         }
 
-        public async Task InsertFeed(FeedDto feed, CancellationToken cancellationToken)
+        public async Task<Guid> InsertFeed(FeedDto feed, CancellationToken cancellationToken)
         {
             var model = new Feed
             {
@@ -51,7 +51,7 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
                 }).ToList() ?? new()
             };
             
-            await _repository.InsertAsync(model, cancellationToken);
+            return await _repository.InsertAsync(model, cancellationToken);
         }
 
         public async Task UpdateFeed(FeedDto feed, CancellationToken cancellationToken)

@@ -1,7 +1,10 @@
 using Asp.Versioning;
 using ClosedXML.Excel;
+using FluentValidation;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using OneOf;
 using RssFeeder.Server.Infrastructure.Services.Contracts;
 using RssFeeder.Shared.Model;
 
@@ -14,57 +17,62 @@ public class FeedController : ControllerBase
 {
     private readonly ILogger<FeedController> _logger;
     private readonly IFeedService _feedService;
-    private readonly IExtractContent _extractContent;
-    private readonly IHttpClientFactory _httpClientFactory;
+    
+
+    private readonly IValidator<FeedNavigation> _feedNavigationValidator;
 
     public FeedController
     (
         ILogger<FeedController> logger,
         IFeedService feedService,
-        IExtractContent extractContent,
-        IHttpClientFactory httpClientFactory
+        IValidator<FeedNavigation> feedNavigationValidator
     )
     {
         _logger = logger;
         _feedService = feedService;
-        _extractContent = extractContent;
-        _httpClientFactory = httpClientFactory;
+        _feedNavigationValidator = feedNavigationValidator;
     }
 
-    [OutputCache(Duration = 900)]
+    [OutputCache(Duration = 3600)]
     [HttpGet("GetAll")]
     public Task<List<FeedNavigation>> GetAll(CancellationToken cancellationToken = default)
     {
         return _feedService.GetAllFeeds(cancellationToken);
     }
 
-    [OutputCache(Duration = 1800)]
+    [OutputCache(Duration = 3600, VaryByQueryKeys = new[] { "href" })]
     [HttpGet("GetContent")]
-    public async Task<List<FeedContent>> GetContent(string href, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetContent(string href, CancellationToken cancellationToken = default)
     {
-        var httpClient = _httpClientFactory.CreateClient();
-        var response = await httpClient.GetAsync(href, cancellationToken);
+        var oneXmlContentOf = await _feedService.GetXmlContent(href, cancellationToken);
 
-        if (response.IsSuccessStatusCode)
-        {
-            var xmlContent = await response.Content.ReadAsStringAsync();
-
-            return _extractContent.GetContentItems(xmlContent);
-        }
-
-        return new();
+        return oneXmlContentOf.Match<IActionResult>
+        (
+            content => Ok(content),
+            notFoundContent => BadRequest("Content doesn't exist."),
+            notSuccessfulRequest => BadRequest(notSuccessfulRequest.Message),
+            notValidHref => BadRequest(notValidHref.Message)
+        );
     }
 
     [HttpPost]
-    public Task Create(FeedNavigation newFeedNavigation, CancellationToken cancellationToken = default)
+    public async Task<OneOf<OkObjectResult, ValidationException>> Create(FeedNavigation newFeedNavigation, CancellationToken cancellationToken = default)
     {
-        return _feedService.InsertFeed(newFeedNavigation, cancellationToken);
+        await _feedNavigationValidator.ValidateAndThrowAsync(newFeedNavigation);
+
+        var id = await _feedService.InsertFeed(newFeedNavigation, cancellationToken);
+        
+        return Ok(id);
     }
 
     [HttpPut("Update")]
-    public Task Update(FeedNavigation newFeedNavigation, CancellationToken cancellationToken = default)
+    public async Task<OneOf<OkResult, ValidationException>> Update(FeedNavigation newFeedNavigation, CancellationToken cancellationToken = default)
     {
-        return _feedService.UpdateFeed(newFeedNavigation, cancellationToken);
+        await _feedNavigationValidator.ValidateAndThrowAsync(newFeedNavigation);
+
+        await _feedService.UpdateFeed(newFeedNavigation, cancellationToken);
+
+        return Ok();
     }
 
     [HttpPost("ExportExcel")]
