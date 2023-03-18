@@ -9,13 +9,17 @@ public partial class AddFeedModalView
 {
     [Parameter] public Func<FeedNavigation, Task> OnSuccessResponse { get; set; }
 
-    private FeedNavigation feedNavigation = new();
+    private FeedNavigation feedNavigation;
     private Modal modalRef;
     private Validations validations;
     private string tagName;
 
     public Task ShowModal()
     {
+        feedNavigation = new();
+        tagName = string.Empty;
+        validations.ClearAll();
+
         return modalRef.Show();
     }
 

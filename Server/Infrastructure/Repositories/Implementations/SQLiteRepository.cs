@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using RssFeeder.Server.Infrastructure.Database;
 using RssFeeder.Server.Infrastructure.Model;
 using RssFeeder.Server.Infrastructure.Repositories.Contracts;
+using System.Linq.Expressions;
 
 namespace RssFeeder.Server.Infrastructure.Repositories.Implementations;
 
@@ -16,22 +17,17 @@ public class SQLiteRepository<TEntity> : ISQLiteRepository<TEntity> where TEntit
         _entitySet = dataContext.Set<TEntity>();
     }
 
-    public void DeleteById(Guid id)
-    {
-        var obj = _entitySet.First(p => p.Id == id);
-        _entitySet.Remove(obj);
-        _dataContext.SaveChanges();
-    }
-
     public Task<List<TEntity>> GetAllAsync(CancellationToken cancellationToken)
     {
         return _entitySet.AsNoTracking().ToListAsync(cancellationToken);
     }
 
-    public async Task InsertAsync(TEntity obj, CancellationToken cancellationToken)
+    public async Task<Guid> InsertAsync(TEntity obj, CancellationToken cancellationToken)
     {
         await _entitySet.AddAsync(obj);
         await _dataContext.SaveChangesAsync(cancellationToken);
+
+        return obj.Id;
     }
 
     public async Task UpdateAsync(TEntity obj, CancellationToken cancellationToken)
@@ -40,8 +36,33 @@ public class SQLiteRepository<TEntity> : ISQLiteRepository<TEntity> where TEntit
         await _dataContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<TEntity?> GetAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<bool> DeleteById(Guid entityId, CancellationToken cancellationToken)
     {
-        return await _entitySet.AsNoTracking().Where(x => x.Id == id).SingleOrDefaultAsync(cancellationToken);
+        var entityToDelete = await _entitySet.FindAsync(new object[] { entityId }, cancellationToken);
+
+        if (entityToDelete != null)
+        {
+            _entitySet.Remove(entityToDelete);
+            await _dataContext.SaveChangesAsync(cancellationToken);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public async Task<TEntity?> GetByIdWithRelatedDataAsync(Guid entityId, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includeProperties)
+    {
+        var query = _entitySet.AsNoTracking().Where(x => x.Id == entityId);
+
+        if (includeProperties != null)
+        {
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+        }
+
+        return await query.SingleOrDefaultAsync(cancellationToken);
     }
 }

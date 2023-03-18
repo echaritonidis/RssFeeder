@@ -1,7 +1,8 @@
 using Asp.Versioning;
-using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using RssFeeder.Server.Infrastructure.Logging;
 using RssFeeder.Server.Infrastructure.Services.Contracts;
 using RssFeeder.Shared.Model;
 
@@ -14,88 +15,153 @@ public class FeedController : ControllerBase
 {
     private readonly ILogger<FeedController> _logger;
     private readonly IFeedService _feedService;
-    private readonly IExtractContent _extractContent;
-    private readonly IHttpClientFactory _httpClientFactory;
 
     public FeedController
     (
         ILogger<FeedController> logger,
-        IFeedService feedService,
-        IExtractContent extractContent,
-        IHttpClientFactory httpClientFactory
+        IFeedService feedService
     )
     {
         _logger = logger;
         _feedService = feedService;
-        _extractContent = extractContent;
-        _httpClientFactory = httpClientFactory;
     }
 
-    [OutputCache(Duration = 900)]
+    [OutputCache(Duration = 3600)]
     [HttpGet("GetAll")]
-    public Task<List<FeedNavigation>> GetAll(CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
     {
-        return _feedService.GetAllFeeds(cancellationToken);
+        var items = await _feedService.GetAllFeeds(cancellationToken);
+
+        _logger.LogGetAll(items.Count);
+
+        return Ok(items);
     }
 
-    [OutputCache(Duration = 1800)]
+    [OutputCache(Duration = 900, VaryByQueryKeys = new[] { "href" })]
     [HttpGet("GetContent")]
-    public async Task<List<FeedContent>> GetContent(string href, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetContent(string href, CancellationToken cancellationToken = default)
     {
-        var httpClient = _httpClientFactory.CreateClient();
-        var response = await httpClient.GetAsync(href, cancellationToken);
+        var oneXmlContentOf = await _feedService.GetXmlContent(href, cancellationToken);
 
-        if (response.IsSuccessStatusCode)
-        {
-            var xmlContent = await response.Content.ReadAsStringAsync();
-
-            return _extractContent.GetContentItems(xmlContent);
-        }
-
-        return new();
+        return oneXmlContentOf.Match<IActionResult>
+        (
+            content =>
+            {
+                _logger.LogContent(href, content.Count);
+                return Ok(content);
+            },
+            notFoundContent =>
+            {
+                _logger.LogContentDoesntExistError(href);
+                return BadRequest("Content doesn't exist.");
+            },
+            notSuccessfulRequest =>
+            {
+                _logger.LogContentOtherError(notSuccessfulRequest.Message);
+                return BadRequest(notSuccessfulRequest.Message);
+            },
+            notValidHref =>
+            {
+                _logger.LogContentOtherError(notValidHref.ErrorMessage);
+                return BadRequest(notValidHref);
+            }
+        );
     }
 
     [HttpPost]
-    public Task Create(FeedNavigation newFeedNavigation, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Create(FeedNavigation newFeedNavigation, CancellationToken cancellationToken = default)
     {
-        return _feedService.InsertFeed(newFeedNavigation, cancellationToken);
+        var oneInsertedOf = await _feedService.InsertFeed(newFeedNavigation, cancellationToken);
+
+        return oneInsertedOf.Match<IActionResult>
+        (
+            id =>
+            {
+                _logger.LogCreated(id);
+                return Ok($"Feed with Id {id} was created successfully");
+            },
+            notValidFeedNavigation =>
+            {
+                _logger.LogCreatedError(string.Join(", ", notValidFeedNavigation.Select(x => x.ErrorMessage)));
+                return BadRequest(notValidFeedNavigation);
+            }
+        );
     }
 
     [HttpPut("Update")]
-    public Task Update(FeedNavigation newFeedNavigation, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Update(FeedNavigation feedNavigation, CancellationToken cancellationToken = default)
     {
-        return _feedService.UpdateFeed(newFeedNavigation, cancellationToken);
-    }
+        var oneUpdatedOf = await _feedService.UpdateFeed(feedNavigation, cancellationToken);
 
-    [HttpPost("ExportExcel")]
-    public string ExportExcelFeed(List<FeedContent> content)
-    {
-        using (var stream = new MemoryStream())
-        {
-            var workbook = new XLWorkbook();
-            var SheetNames = new List<string>() { "15-16", "16-17", "17-18", "18-19", "19-20" };
-
-            foreach (var sheetname in SheetNames)
+        return oneUpdatedOf.Match<IActionResult>
+        (
+            id =>
             {
-                var worksheet = workbook.Worksheets.Add(sheetname);
-
-                worksheet.Cell("A1").Value = sheetname;
+                _logger.LogUpdated(id);
+                return Ok($"Feed with Id {id} was updated successfully");
+            },
+            notValidFeedNavigation =>
+            {
+                _logger.LogUpdatedError(string.Join(", ", notValidFeedNavigation.Select(x => x.ErrorMessage)));
+                return BadRequest(notValidFeedNavigation);
             }
-
-            workbook.SaveAs(stream);
-            stream.Seek(0, SeekOrigin.Begin);
-
-            return Convert.ToBase64String(stream.ToArray());
-        }
+        );
     }
 
-    public string BaseCreatedDirectory
+    [HttpDelete("Delete")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
     {
-        get
-        {
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Created");
-            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-            return path;
-        }
+        var oneDeleteOf = await _feedService.DeleteFeed(id, cancellationToken);
+
+        return oneDeleteOf.Match<IActionResult>
+        (
+            success =>
+            {
+                if (success)
+                {
+                    _logger.LogDeleted(id);
+                    return Ok($"Feed with Id {id} was deleted successfully");
+                }
+
+                return Ok($"Feed with Id {id} wasn't deleted");
+            },
+            exceptionOccurred =>
+            {
+                _logger.LogDeletedError(exceptionOccurred.Message);
+                return BadRequest("Something went wrong, please contact administrator for support.");
+            }
+        );
     }
+
+    //[HttpPost("ExportExcel")]
+    //public string ExportExcelFeed(List<FeedContent> content)
+    //{
+    //    using (var stream = new MemoryStream())
+    //    {
+    //        var workbook = new XLWorkbook();
+    //        var SheetNames = new List<string>() { "15-16", "16-17", "17-18", "18-19", "19-20" };
+
+    //        foreach (var sheetname in SheetNames)
+    //        {
+    //            var worksheet = workbook.Worksheets.Add(sheetname);
+
+    //            worksheet.Cell("A1").Value = sheetname;
+    //        }
+
+    //        workbook.SaveAs(stream);
+    //        stream.Seek(0, SeekOrigin.Begin);
+
+    //        return Convert.ToBase64String(stream.ToArray());
+    //    }
+    //}
+
+    //public string BaseCreatedDirectory
+    //{
+    //    get
+    //    {
+    //        var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Created");
+    //        if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+    //        return path;
+    //    }
+    //}
 }

@@ -26,13 +26,14 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
                 Favorite = x.Favorite,
                 Tags = x.Tags?.Select(tag => new TagsDto
                 {
+                    Id = tag.Id,
                     Name = tag.Name,
                     Color = tag.Color
                 }).ToList() ?? new()
             }).ToList();
         }
 
-        public async Task InsertFeed(FeedDto feed, CancellationToken cancellationToken)
+        public async Task<Guid> InsertFeed(FeedDto feed, CancellationToken cancellationToken)
         {
             var model = new Feed
             {
@@ -51,12 +52,12 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
                 }).ToList() ?? new()
             };
             
-            await _repository.InsertAsync(model, cancellationToken);
+            return await _repository.InsertAsync(model, cancellationToken);
         }
 
         public async Task UpdateFeed(FeedDto feed, CancellationToken cancellationToken)
         {
-            var item = await _repository.GetAsync(feed.Id, cancellationToken);
+            var item = await _repository.GetByIdWithRelatedDataAsync(feed.Id, cancellationToken, o => o.Tags);
 
             if (item is null) return;
 
@@ -69,13 +70,18 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
                 Favorite = feed.Favorite,
                 Tags = feed.Tags.Select(tag => new Tags
                 {
-                    Id = Guid.NewGuid(),
+                    Id = tag.Id,
                     Name = tag.Name,
                     Color = tag.Color
                 }).ToList()
             };
             
             await _repository.UpdateAsync(item, cancellationToken);
+        }
+
+        public Task<bool> DeleteFeed(Guid feedId, CancellationToken cancellationToken)
+        {
+            return _repository.DeleteById(feedId, cancellationToken);
         }
     }
 }

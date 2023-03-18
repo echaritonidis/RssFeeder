@@ -8,11 +8,11 @@ namespace RssFeeder.Client.Shared;
 
 public partial class NavMenu
 {
-    [Inject] public HttpClient _httpClient { get; set; }
+    [Inject] public HttpClient _httpClient { get; set; } = default!;
 
-    [Inject] public NotifyEventService _notifyEventService { get; set; }
+    [Inject] public NotifyEventService _notifyEventService { get; set; } = default!;
 
-    private AddFeedModalView addFeedModalViewRef;
+    private AddFeedModalView addFeedModalViewRef = default!;
 
     Task OnAddFeed()
     {
@@ -21,7 +21,8 @@ public partial class NavMenu
 
     async Task OnSaveResponse(FeedNavigation feedNavigation)
     {
-        await _httpClient.PostAsJsonAsync<FeedNavigation>("Feed", feedNavigation);
+        // TODO: Do something with the response like show an alert
+        await _httpClient.PostAsJsonAsync<FeedNavigation>("/api/v1.0/Feed", feedNavigation);
 
         _notifyEventService.NotifyEventClick(feedNavigation);
     }

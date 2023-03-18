@@ -47,7 +47,7 @@ namespace RssFeeder.Server.Migrations
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Color = table.Column<string>(type: "TEXT", nullable: true),
-                    FeedId = table.Column<Guid>(type: "TEXT", nullable: true)
+                    FeedId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -56,7 +56,8 @@ namespace RssFeeder.Server.Migrations
                         name: "FK_Tags_Feed_FeedId",
                         column: x => x.FeedId,
                         principalTable: "Feed",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

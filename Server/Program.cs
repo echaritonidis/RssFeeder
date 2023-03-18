@@ -15,13 +15,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddHttpClient("Default", op =>
 {
-    op.BaseAddress = new Uri("https://localhost:7165");
+    op.BaseAddress = new Uri("https://localhost:5001");
     op.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddRazorPages();
+
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
@@ -34,6 +35,7 @@ builder.Services.AddTransient<IFeedService, FeedService>();
 
 builder.Services.AddTransient<IExtractContent, ExtractContent>();
 builder.Services.AddSingleton<DateRegexUtil>();
+builder.Services.AddSingleton<LinkRegexUtil>();
 
 // Api
 builder.Services.AddApiVersioning(opt =>
@@ -51,6 +53,11 @@ builder.Services.AddApiVersioning(opt =>
 
 // Validators
 builder.Services.AddScoped<IValidator<FeedNavigation>, FeedNavigationValidator>();
+
+// Logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
 var app = builder.Build();
 
