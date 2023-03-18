@@ -11,14 +11,14 @@ using RssFeeder.Server.Infrastructure.Database;
 namespace RssFeeder.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230116184042_InitialCreate")]
+    [Migration("20230318153518_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.2");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.4");
 
             modelBuilder.Entity("RssFeeder.Server.Infrastructure.Model.Feed", b =>
                 {
@@ -74,7 +74,7 @@ namespace RssFeeder.Server.Migrations
                     b.Property<string>("Color")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("FeedId")
+                    b.Property<Guid>("FeedId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -89,9 +89,13 @@ namespace RssFeeder.Server.Migrations
 
             modelBuilder.Entity("RssFeeder.Server.Infrastructure.Model.Tags", b =>
                 {
-                    b.HasOne("RssFeeder.Server.Infrastructure.Model.Feed", null)
+                    b.HasOne("RssFeeder.Server.Infrastructure.Model.Feed", "Feed")
                         .WithMany("Tags")
-                        .HasForeignKey("FeedId");
+                        .HasForeignKey("FeedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Feed");
                 });
 
             modelBuilder.Entity("RssFeeder.Server.Infrastructure.Model.Feed", b =>

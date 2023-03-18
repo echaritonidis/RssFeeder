@@ -11,12 +11,11 @@ public class DataContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Dummy data
-        //modelBuilder.Entity<Feed>().HasData
-        //(
-        //    new Feed() { Id = Guid.NewGuid(), Name = "Fidle", Href = "https://fiddle.xml" },
-        //    new Feed() { Id = Guid.NewGuid(), Name = "Orches", Href = "https://orches.xml" }
-        //);
+        modelBuilder.Entity<Feed>()
+            .HasMany(p => p.Tags)
+            .WithOne(c => c.Feed)
+            .HasForeignKey(c => c.FeedId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
     public DbSet<Feed> Feed { get; set; }

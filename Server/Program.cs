@@ -9,14 +9,13 @@ using RssFeeder.Shared.Model;
 using RssFeeder.Server.Infrastructure.Validators;
 using RssFeeder.Server.Infrastructure.Utils;
 using Asp.Versioning;
-using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddHttpClient("Default", op =>
 {
-    op.BaseAddress = new Uri("https://localhost:7165");
+    op.BaseAddress = new Uri("https://localhost:5001");
     op.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
@@ -24,9 +23,6 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddRazorPages();
 
-builder.Services
-    .AddFluentValidationAutoValidation()
-    .AddFluentValidationClientsideAdapters();
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
@@ -57,6 +53,11 @@ builder.Services.AddApiVersioning(opt =>
 
 // Validators
 builder.Services.AddScoped<IValidator<FeedNavigation>, FeedNavigationValidator>();
+
+// Logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
 var app = builder.Build();
 

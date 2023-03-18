@@ -9,6 +9,8 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Contracts
         public Task<Guid> InsertFeed(FeedDto feed, CancellationToken cancellationToken);
 
         public Task UpdateFeed(FeedDto feed, CancellationToken cancellationToken);
+
+        public Task<bool> DeleteFeed(Guid feedId, CancellationToken cancellationToken);
     }
 }
 

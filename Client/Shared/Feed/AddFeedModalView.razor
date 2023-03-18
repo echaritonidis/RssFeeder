@@ -8,59 +8,61 @@
         <ModalBody>
             <Validations @ref="validations" Mode="ValidationMode.Manual">
 
-                <Field>
-                    <FieldLabel>Title</FieldLabel>
-                    <Validation Validator="ValidationRule.IsNotEmpty">
-                        <TextEdit @bind-Text="feedNavigation.Title">
-                            <Feedback>
-                                <ValidationError>Enter valid title!</ValidationError>
-                            </Feedback>
-                        </TextEdit>
-                    </Validation>
-                </Field>
-                <Field>
-                    <FieldLabel>RSS link</FieldLabel>
-                    <Validation Validator="ValidateHyperlink">
-                        <TextEdit @bind-Text="feedNavigation.Href">
-                            <Feedback>
-                                <ValidationError>Enter valid RSS link!</ValidationError>
-                            </Feedback>
-                        </TextEdit>
-                    </Validation>
-                </Field>
-                <Field>
-                    <Check TValue="bool" @bind-Checked="@feedNavigation.Default">Default</Check>
-                </Field>
-                <Field>
-                    <Check TValue="bool" @bind-Checked="@feedNavigation.Favorite">Favorite</Check>
-                </Field>
-                <Field>
-                    <FieldLabel>Tags</FieldLabel>
-                    <Row>
-                        <Column ColumnSize="ColumnSize.Is10">
-                            <TextEdit @bind-Text="tagName" Pattern="[A-Za-z]{3}">
+                @if (feedNavigation != null)
+                {
+                    <Field>
+                        <FieldLabel>Title</FieldLabel>
+                        <Validation Validator="ValidationRule.IsNotEmpty">
+                            <TextEdit @bind-Text="feedNavigation.Title">
                                 <Feedback>
                                     <ValidationError>Enter valid title!</ValidationError>
                                 </Feedback>
                             </TextEdit>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is2">
-                            <Button Clicked="OnAddNewTag">
-                                <Icon Name="IconName.Add" />
-                            </Button>
-                        </Column>
-                    </Row>
+                        </Validation>
+                    </Field>
+                    <Field>
+                        <FieldLabel>RSS link</FieldLabel>
+                        <Validation Validator="ValidateHyperlink">
+                            <TextEdit @bind-Text="feedNavigation.Href">
+                                <Feedback>
+                                    <ValidationError>Enter valid RSS link!</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </Validation>
+                    </Field>
+                    <Field>
+                        <Check TValue="bool" @bind-Checked="@feedNavigation.Default">Default</Check>
+                    </Field>
+                    <Field>
+                        <Check TValue="bool" @bind-Checked="@feedNavigation.Favorite">Favorite</Check>
+                    </Field>
+                    <Field>
+                        <FieldLabel>Tags</FieldLabel>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is10">
+                                <TextEdit @bind-Text="tagName" Pattern="[A-Za-z]{3}">
+                                    <Feedback>
+                                        <ValidationError>Enter valid title!</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is2">
+                                <Button Clicked="OnAddNewTag">
+                                    <Icon Name="IconName.Add" />
+                                </Button>
+                            </Column>
+                        </Row>
 
-                    @if (feedNavigation.Tags != null)
-                    {
-                        foreach (var tag in feedNavigation.Tags)
+                        @if (feedNavigation.Tags != null)
                         {
-                            <Badge Color="Color.Primary" CloseClicked="@(_ => OnBadgeClose(tag))">@tag.Name</Badge>
+                            foreach (var tag in feedNavigation.Tags)
+                            {
+                                <Badge Color="Color.Primary" CloseClicked="@(_ => OnBadgeClose(tag))">@tag.Name</Badge>
+                            }
                         }
-                    }
 
-                </Field>
-                    
+                    </Field>
+                }
             </Validations>
 
         </ModalBody>
