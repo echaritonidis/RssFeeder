@@ -79,6 +79,13 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
             await _repository.UpdateAsync(item, cancellationToken);
         }
 
+        public async Task<bool> ResetFeedDefault(List<Guid> ids, CancellationToken cancellationToken)
+        {
+            var items = await _repository.GetAllByIdsAsync(ids, cancellationToken);
+            var updateItems = items.Select(i => i with { Default = false }).ToList();
+            return ids.Count == (await _repository.UpdateRangeAsync(updateItems, cancellationToken));
+        }
+
         public Task<bool> DeleteFeed(Guid feedId, CancellationToken cancellationToken)
         {
             return _repository.DeleteById(feedId, cancellationToken);

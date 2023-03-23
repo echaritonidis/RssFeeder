@@ -1,99 +1,111 @@
-﻿.separator {
-    width: 800px;
-    margin: 0 auto;
-    background-color: #bfbfbf;
+﻿#nav-wrapper {
+    background-color: antiquewhite;
 }
-
-#nav-menu {
-    height: 38px;
-    width: 800px;
-    margin: 10px auto;
-    padding: 0 24px;
-}
-    #nav-logo {
-        font-size: 22px;
-        font-weight: bold;
-        color: #000;
-        text-decoration: none;
-        position: relative;
-        top: 2px;
+    #nav-menu {
+        height: 50px;
+        width: 800px;
+        margin: 0 auto 10px;
+        padding: 5px 24px;
     }
+        #nav-logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #000;
+            text-decoration: none;
+            position: relative;
+            top: 2px;
+        }
 
 #main {
     width: 800px;
-    margin: 10px auto;
+    margin: 30px auto 10px;
     padding: 0 24px;
+    display: grid;
+    justify-content: space-between;
+    grid-template-areas: "leftPanel mainArea";
 }
 
-/* Left content */
-.left-panel {
-    width: 240px;
-    height: 600px;
-    float: left;
-}
+    /* Left content */
+    #main .left-panel {
+        width: 240px;
+        height: 600px;
+        grid-area: leftPanel;
+    }
 
-.feed-nav {
-    padding: 2px 0;
-    display: block;
-}
-    .feed-nav p {
-        display: inline;
-    }
-    .feed-nav:hover {
-        cursor: pointer;
-    }
-        .feed-nav:hover a {
-            color: #8941bf !important;
-            text-decoration: underline !important;
+        #main .left-panel .feed-nav {
+            padding: 2px 0;
+            display: grid;
+            grid-template-columns: auto 24px 24px;
+            grid-template-rows: 28px;
+            align-items: center;
+        }
+            #main .left-panel .feed-nav p { margin: 0; }
+            #main .left-panel .feed-nav:hover,
+            #main .left-panel .feed-nav-active {
+                color: #ffcc77;
+            }
+            #main .left-panel #main .left-panel.feed-nav p {
+                display: inline;
+                font-size: 0.95rem;
+            }
+        #main .left-panel .feed-nav:hover {
+            cursor: pointer;
+        }
+            #main .left-panel .feed-nav:hover a {
+                color: #8941bf !important;
+                text-decoration: underline !important;
+            }
+
+        #main .left-panel .feed-nav .nav-icon {
+            color: gray;
+            display: block;
+            height: 17px;
+            margin: 0 4px;
         }
 
-.nav-icon {
-    color: gray;
-    display: block;
-    position: relative;
-    top: 4px;
-    margin: 0 4px;
-}
+        #main .left-panel .feed-nav .favorite-icon-checked {
+            color: #ffe646;
+        }
 
-.favorite-icon-checked {
-    color: #FFE838;
-}
+        #main .left-panel .feed-nav .default-icon-checked {
+            color: #ffe646;
+        }
 
-.default-icon-checked {
-    color: #FFE838;
-}
-
-/* Main content */
-.right-content {
-    width: 500px;
-    min-height: 700px;
-    float: right;
-}
-
-    .right-content .loader {
-        position: relative;
-        top: 34px;
+    /* Main content */
+    #main .main-content {
+        width: 500px;
+        min-height: 700px;
+        grid-area: mainArea;
     }
 
-    .right-content a {
-        margin-bottom: 20px;
-        display: block;
-        padding: 6px 10px;
-        -webkit-border-radius: 4px;
-        -moz-border-radius: 4px;
-        border-radius: 4px;
-    }
-        .right-content a:nth-child(odd) {
-            background-color: #f2f2f2;
+        #main .main-content .loader {
+            position: relative;
+            top: 34px;
         }
-        .right-content a:hover h5 {
-            text-decoration: underline;
+
+        #main .main-content a {
+            margin-bottom: 20px;
+            display: block;
+            padding: 6px 10px;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
         }
-        .right-content .published {
+            #main .main-content a:hover {
+                background-color: #f2f2f2;
+            }
+                #main .main-content a:hover h5 {
+                    text-decoration: underline;
+                }
+        #main .main-content h5 {
+            font-size: 1.15rem;
+        }
+
+        #main .main-content .published {
             font-size: 0.9rem;
             margin: 0 0 5px 0;
         }
-    .right-content .desc {
-        font-size: 1rem;
-        margin: 0;
-    }
+        #main .main-content .desc {
+            font-size: 0.95rem;
+            margin: 0;
+        }

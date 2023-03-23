@@ -76,6 +76,11 @@ public partial class Index : IDisposable
     protected async Task OnDefaultToggle(FeedNavigation feedNavigation)
     {
         // TODO: Add single action to update those bools instead of whole object
+
+
+        // At first reset the Default of all elements
+        await _httpClient.PutAsJsonAsync("/api/v1.0/Feed/ResetDefault", FeedNavigations.Select(x => x.Id));
+
         await _httpClient.PutAsJsonAsync("/api/v1.0/Feed/Update", feedNavigation);
     }
 
