@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.Wordprocessing;
 using FluentValidation;
 using FluentValidation.Results;
 using OneOf;
@@ -45,6 +46,7 @@ public class FeedService : IFeedService
                 Name = tag.Name,
                 Color = tag.Color
             }).ToList() ?? new(),
+            Active = x.Default,
             Favorite = x.Favorite,
             Default = x.Default
         }).ToList();
@@ -94,6 +96,13 @@ public class FeedService : IFeedService
         }, cancellationToken);
 
         return feedNavigation.Id;
+    }
+
+    public async Task<OneOf<bool, ValidationFailure>> ResetDefault(List<Guid> ids, CancellationToken cancellationToken)
+    {
+        if (ids?.Count == 0) return new ValidationFailure("Ids", "Please provide Id's to reset.");
+
+        return await _feedRepository.ResetFeedDefault(ids, cancellationToken);
     }
 
     public async Task<OneOf<bool, Exception>> DeleteFeed(Guid feedId, CancellationToken cancellationToken)

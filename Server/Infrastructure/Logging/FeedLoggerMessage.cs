@@ -26,10 +26,16 @@
         [LoggerMessage(EventId = 1007, Level = LogLevel.Debug, Message = "Error occurred during update: {message}")]
         public static partial void LogUpdatedError(this ILogger logger, string message);
 
-        [LoggerMessage(EventId = 1008, Level = LogLevel.Debug, Message = "FeedNavigation id: {id} deleted")]
+        [LoggerMessage(EventId = 1008, Level = LogLevel.Debug, Message = "Default FeedNavigation id's: {ids} were reseted")]
+        public static partial void LogDefaultReset(this ILogger logger, List<Guid> ids);
+
+        [LoggerMessage(EventId = 1009, Level = LogLevel.Debug, Message = "Error occurred during default reset: {message}")]
+        public static partial void LogDefaultResetError(this ILogger logger, string message);
+
+        [LoggerMessage(EventId = 1010, Level = LogLevel.Debug, Message = "FeedNavigation id: {id} deleted")]
         public static partial void LogDeleted(this ILogger logger, Guid id);
 
-        [LoggerMessage(EventId = 1009, Level = LogLevel.Debug, Message = "Error occurred during deletion: {message}")]
+        [LoggerMessage(EventId = 1011, Level = LogLevel.Debug, Message = "Error occurred during deletion: {message}")]
         public static partial void LogDeletedError(this ILogger logger, string message);
     }
 }

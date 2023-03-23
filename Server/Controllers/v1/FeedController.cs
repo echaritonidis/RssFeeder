@@ -108,6 +108,27 @@ public class FeedController : ControllerBase
         );
     }
 
+    [HttpPut("ResetDefault")]
+    public async Task<IActionResult> ResetDefault(List<Guid> ids, CancellationToken cancellationToken = default)
+    {
+        var oneUpdatedOf = await _feedService.ResetDefault(ids, cancellationToken);
+
+        return oneUpdatedOf.Match<IActionResult>
+        (
+            id =>
+            {
+                _logger.LogDefaultReset(ids);
+                return Ok($"Default feed's was successfully reset");
+            },
+            notValidFeedNavigation =>
+            {
+                _logger.LogDefaultResetError(notValidFeedNavigation.ErrorMessage);
+                return BadRequest(notValidFeedNavigation);
+            }
+        );
+    }
+    
+
     [HttpDelete("Delete")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
     {

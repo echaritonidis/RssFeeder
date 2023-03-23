@@ -22,9 +22,18 @@ public partial class FeedNavView
 
     private async Task OnDefaultToggle(FeedNavigation item)
     {
+        Model.ForEach(i => i.Default = false);
         item.Default = !item.Default;
 
         await this.OnDefaultChangeCallback.InvokeAsync(item);
+    }
+
+    private async Task OnFeedNavClickAsync(FeedNavigation item)
+    {
+        Model.ForEach(i => i.Active = false);
+        item.Active = true;
+
+        await OnSelectFeedCallback.InvokeAsync(item);
     }
 }
 

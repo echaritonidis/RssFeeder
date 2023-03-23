@@ -22,6 +22,11 @@ public class SQLiteRepository<TEntity> : ISQLiteRepository<TEntity> where TEntit
         return _entitySet.AsNoTracking().ToListAsync(cancellationToken);
     }
 
+    public Task<List<TEntity>> GetAllByIdsAsync(List<Guid> ids, CancellationToken cancellationToken)
+    {
+        return _entitySet.AsNoTracking().Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
+    }
+
     public async Task<Guid> InsertAsync(TEntity obj, CancellationToken cancellationToken)
     {
         await _entitySet.AddAsync(obj);
@@ -34,6 +39,12 @@ public class SQLiteRepository<TEntity> : ISQLiteRepository<TEntity> where TEntit
     {
         _entitySet.Update(obj);
         await _dataContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<int> UpdateRangeAsync(List<TEntity> obj, CancellationToken cancellationToken)
+    {
+        _entitySet.UpdateRange(obj);
+        return await _dataContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<bool> DeleteById(Guid entityId, CancellationToken cancellationToken)
