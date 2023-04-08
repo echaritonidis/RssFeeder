@@ -34,6 +34,8 @@ builder.Services.AddTransient<IFeedRepository, FeedRepository>();
 builder.Services.AddTransient<IFeedService, FeedService>();
 
 builder.Services.AddTransient<IExtractContent, ExtractContent>();
+builder.Services.AddTransient<IExtractImage, ExtractImage>();
+
 builder.Services.AddSingleton<DateRegexUtil>();
 builder.Services.AddSingleton<LinkRegexUtil>();
 

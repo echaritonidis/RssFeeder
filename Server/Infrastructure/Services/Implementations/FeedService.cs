@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.Wordprocessing;
 using FluentValidation;
 using FluentValidation.Results;
 using OneOf;
@@ -136,6 +135,6 @@ public class FeedService : IFeedService
             return new NotFound();
         }
 
-        return _extractContent.GetContentItems(xmlContent);
+        return await _extractContent.GetContentItems(xmlContent);
     }
 }
