@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RssFeeder.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialDbCreation : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -41,7 +41,7 @@ namespace RssFeeder.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tags",
+                name: "Label",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -51,9 +51,9 @@ namespace RssFeeder.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tags", x => x.Id);
+                    table.PrimaryKey("PK_Label", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tags_Feed_FeedId",
+                        name: "FK_Label_Feed_FeedId",
                         column: x => x.FeedId,
                         principalTable: "Feed",
                         principalColumn: "Id",
@@ -61,8 +61,8 @@ namespace RssFeeder.Server.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tags_FeedId",
-                table: "Tags",
+                name: "IX_Label_FeedId",
+                table: "Label",
                 column: "FeedId");
         }
 
@@ -70,10 +70,10 @@ namespace RssFeeder.Server.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Settings");
+                name: "Label");
 
             migrationBuilder.DropTable(
-                name: "Tags");
+                name: "Settings");
 
             migrationBuilder.DropTable(
                 name: "Feed");

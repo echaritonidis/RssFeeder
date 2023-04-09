@@ -1,5 +1,4 @@
 using Asp.Versioning;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using RssFeeder.Server.Infrastructure.Logging;

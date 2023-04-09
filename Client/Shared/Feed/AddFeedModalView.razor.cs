@@ -12,12 +12,12 @@ public partial class AddFeedModalView
     private FeedNavigation feedNavigation;
     private Modal modalRef;
     private Validations validations;
-    private string tagName;
+    private string labelName;
 
     public Task ShowModal()
     {
         feedNavigation = new();
-        tagName = string.Empty;
+        labelName = string.Empty;
         validations.ClearAll();
 
         return modalRef.Show();
@@ -38,22 +38,21 @@ public partial class AddFeedModalView
         }
     }
 
-    private void OnAddNewTag()
+    private void OnAddNewLabel()
     {
-        if (feedNavigation.Tags == null) feedNavigation.Tags = new();
+        if (feedNavigation.FeedLabels == null) feedNavigation.FeedLabels = new();
 
-        feedNavigation.Tags.Add(new FeedTag
+        feedNavigation.FeedLabels.Add(new FeedLabel
         {
-            Name = tagName
+            Name = labelName
         });
 
-        tagName = null;
+        labelName = string.Empty;
     }
 
-
-    protected void OnBadgeClose(FeedTag feedTag)
+    protected void OnBadgeClose(FeedLabel label)
     {
-        feedNavigation.Tags.Remove(feedTag);
+        feedNavigation.FeedLabels?.Remove(label);
     }
 
     protected void ValidateHyperlink(ValidatorEventArgs e)

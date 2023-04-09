@@ -41,10 +41,10 @@ public class FeedService : IFeedService
             Id = x.Id,
             Href = x.Href,
             Title = x.Title,
-            Tags = x.Tags?.Select(tag => new FeedTag
+            FeedLabels = x.Labels?.Select(label => new FeedLabel
             {
-                Name = tag.Name,
-                Color = tag.Color
+                Name = label.Name,
+                Color = label.Color
             }).ToList() ?? new(),
             Active = x.Default,
             Favorite = x.Favorite,
@@ -63,11 +63,11 @@ public class FeedService : IFeedService
             Id = newFeedNavigation.Id,
             Href = newFeedNavigation.Href,
             Title = newFeedNavigation.Title,
-            Tags = newFeedNavigation.Tags?.Select(tag => new TagsDto
+            Labels = newFeedNavigation.FeedLabels?.Select(label => new LabelDto
             {
-                Id = tag.Id,
-                Name = tag.Name,
-                Color = tag.Color
+                Id = label.Id,
+                Name = label.Name,
+                Color = label.Color
             }).ToList() ?? new(),
             Favorite = newFeedNavigation.Favorite,
             Default = newFeedNavigation.Default
@@ -85,11 +85,11 @@ public class FeedService : IFeedService
             Id = feedNavigation.Id,
             Href = feedNavigation.Href,
             Title = feedNavigation.Title,
-            Tags = feedNavigation.Tags?.Select(tag => new TagsDto
+            Labels = feedNavigation.FeedLabels?.Select(label => new LabelDto
             {
-                Id = tag.Id,
-                Name = tag.Name,
-                Color = tag.Color
+                Id = label.Id,
+                Name = label.Name,
+                Color = label.Color
             }).ToList() ?? new(),
             Favorite = feedNavigation.Favorite,
             Default = feedNavigation.Default

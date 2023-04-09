@@ -15,7 +15,7 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
 
         public async Task<List<FeedDto>> GetAllFeeds(CancellationToken cancellationToken)
         {
-            var items = await _repository.GetAllAsync(cancellationToken);
+            var items = await _repository.GetAllWithRelatedDataAsync(cancellationToken, o => o.Labels);
 
             return items.Select(x => new FeedDto
             {
@@ -24,11 +24,11 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
                 Href = x.Href,
                 Default = x.Default,
                 Favorite = x.Favorite,
-                Tags = x.Tags?.Select(tag => new TagsDto
+                Labels = x.Labels?.Select(label => new LabelDto
                 {
-                    Id = tag.Id,
-                    Name = tag.Name,
-                    Color = tag.Color
+                    Id = label.Id,
+                    Name = label.Name,
+                    Color = label.Color
                 }).ToList() ?? new()
             }).ToList();
         }
@@ -44,11 +44,11 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
                 Href = feed.Href,
                 Default = feed.Default,
                 Favorite = feed.Favorite,
-                Tags = feed.Tags?.Select(tag => new Tags
+                Labels = feed.Labels?.Select(label => new Label
                 {
                     Id = Guid.NewGuid(),
-                    Name = tag.Name,
-                    Color = tag.Color
+                    Name = label.Name,
+                    Color = label.Color
                 }).ToList() ?? new()
             };
             
@@ -57,7 +57,7 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
 
         public async Task UpdateFeed(FeedDto feed, CancellationToken cancellationToken)
         {
-            var item = await _repository.GetByIdWithRelatedDataAsync(feed.Id, cancellationToken, o => o.Tags);
+            var item = await _repository.GetByIdWithRelatedDataAsync(feed.Id, cancellationToken, o => o.Labels);
 
             if (item is null) return;
 
@@ -68,11 +68,11 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
                 Href = feed.Href,
                 Default = feed.Default,
                 Favorite = feed.Favorite,
-                Tags = feed.Tags.Select(tag => new Tags
+                Labels = feed.Labels.Select(label => new Label
                 {
-                    Id = tag.Id,
-                    Name = tag.Name,
-                    Color = tag.Color
+                    Id = label.Id,
+                    Name = label.Name,
+                    Color = label.Color
                 }).ToList()
             };
             

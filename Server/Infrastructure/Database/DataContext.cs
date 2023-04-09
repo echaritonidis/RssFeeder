@@ -12,13 +12,13 @@ public class DataContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<Feed>()
-            .HasMany(p => p.Tags)
+            .HasMany(p => p.Labels)
             .WithOne(c => c.Feed)
             .HasForeignKey(c => c.FeedId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 
     public DbSet<Feed> Feed { get; set; }
-    public DbSet<Tags> Tags { get; set; }
+    public DbSet<Label> Label { get; set; }
     public DbSet<Settings> Settings { get; set; }
 }

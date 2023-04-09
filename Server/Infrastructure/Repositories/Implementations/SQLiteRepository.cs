@@ -62,6 +62,21 @@ public class SQLiteRepository<TEntity> : ISQLiteRepository<TEntity> where TEntit
         return false;
     }
 
+    public async Task<List<TEntity>> GetAllWithRelatedDataAsync(CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includeProperties)
+    {
+        var query = _entitySet.AsNoTracking();
+
+        if (includeProperties != null)
+        {
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+        }
+
+        return await query.ToListAsync(cancellationToken);
+    }
+
     public async Task<TEntity?> GetByIdWithRelatedDataAsync(Guid entityId, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includeProperties)
     {
         var query = _entitySet.AsNoTracking().Where(x => x.Id == entityId);

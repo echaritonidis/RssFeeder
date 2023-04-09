@@ -37,27 +37,27 @@
                         <Check TValue="bool" @bind-Checked="@feedNavigation.Favorite">Favorite</Check>
                     </Field>
                     <Field>
-                        <FieldLabel>Tags</FieldLabel>
+                        <FieldLabel>Labels</FieldLabel>
                         <Row>
                             <Column ColumnSize="ColumnSize.Is10">
-                                <TextEdit @bind-Text="tagName" Pattern="[A-Za-z]{3}">
+                                <TextEdit @bind-Text="labelName" Pattern="[A-Za-z]{3}">
                                     <Feedback>
                                         <ValidationError>Enter valid title!</ValidationError>
                                     </Feedback>
                                 </TextEdit>
                             </Column>
                             <Column ColumnSize="ColumnSize.Is2">
-                                <Button Clicked="OnAddNewTag">
+                                <Button Clicked="OnAddNewLabel">
                                     <Icon Name="IconName.Add" />
                                 </Button>
                             </Column>
                         </Row>
 
-                        @if (feedNavigation.Tags != null)
+                        @if (feedNavigation.FeedLabels != null)
                         {
-                            foreach (var tag in feedNavigation.Tags)
+                            foreach (var label in feedNavigation.FeedLabels)
                             {
-                                <Badge Color="Color.Primary" CloseClicked="@(_ => OnBadgeClose(tag))">@tag.Name</Badge>
+                                <Badge Color="Color.Primary" CloseClicked="@(_ => OnBadgeClose(label))">@label.Name</Badge>
                             }
                         }
 

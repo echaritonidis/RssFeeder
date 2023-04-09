@@ -11,8 +11,8 @@ using RssFeeder.Server.Infrastructure.Database;
 namespace RssFeeder.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230318153518_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20230409132533_InitialDbCreation")]
+    partial class InitialDbCreation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,21 +51,7 @@ namespace RssFeeder.Server.Migrations
                     b.ToTable("Feed");
                 });
 
-            modelBuilder.Entity("RssFeeder.Server.Infrastructure.Model.Settings", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("DarkMode")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Settings");
-                });
-
-            modelBuilder.Entity("RssFeeder.Server.Infrastructure.Model.Tags", b =>
+            modelBuilder.Entity("RssFeeder.Server.Infrastructure.Model.Label", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -84,13 +70,27 @@ namespace RssFeeder.Server.Migrations
 
                     b.HasIndex("FeedId");
 
-                    b.ToTable("Tags");
+                    b.ToTable("Label");
                 });
 
-            modelBuilder.Entity("RssFeeder.Server.Infrastructure.Model.Tags", b =>
+            modelBuilder.Entity("RssFeeder.Server.Infrastructure.Model.Settings", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("DarkMode")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Settings");
+                });
+
+            modelBuilder.Entity("RssFeeder.Server.Infrastructure.Model.Label", b =>
                 {
                     b.HasOne("RssFeeder.Server.Infrastructure.Model.Feed", "Feed")
-                        .WithMany("Tags")
+                        .WithMany("Labels")
                         .HasForeignKey("FeedId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -100,7 +100,7 @@ namespace RssFeeder.Server.Migrations
 
             modelBuilder.Entity("RssFeeder.Server.Infrastructure.Model.Feed", b =>
                 {
-                    b.Navigation("Tags");
+                    b.Navigation("Labels");
                 });
 #pragma warning restore 612, 618
         }
