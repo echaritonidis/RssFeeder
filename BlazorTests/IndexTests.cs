@@ -70,9 +70,9 @@ namespace BlazorTests
                 // Act
 
                 // Wait to load nav
-                component.WaitForState(() => component.FindAll(".feed-nav").Count.Equals(1), TimeSpan.FromMinutes(1));
+                component.WaitForState(() => component.FindAll(".feed-nav .feed-item").Count.Equals(1), TimeSpan.FromMinutes(1));
 
-                var feedNavs = component.FindAll(".feed-nav", enableAutoRefresh: true);
+                var feedNavs = component.FindAll(".feed-nav .feed-item", enableAutoRefresh: true);
                 var children = feedNavs[0].Children;
                 var icons = children.Filter(".nav-icon").ToList();
 

@@ -1,6 +1,6 @@
 ﻿namespace RssFeeder.Shared.Model;
 
-public class FeedTag
+public class FeedLabel
 {
     public Guid Id { get; set; }
     public string? Name { get; set; }

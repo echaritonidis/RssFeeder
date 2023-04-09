@@ -7,7 +7,7 @@ public class FeedDto
     public DateTime ModifiedAt { get; set; }
     public string Title { get; set; }
     public string Href { get; set; }
-    public List<TagsDto> Tags { get; set; }
+    public List<LabelDto> Labels { get; set; }
     public bool Favorite { get; set; }
     public bool Default { get; set; }
 }

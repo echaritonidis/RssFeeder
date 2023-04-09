@@ -10,5 +10,6 @@ public interface ISQLiteRepository<TEntity>
     public Task<bool> DeleteById(Guid entityId, CancellationToken cancellationToken);
     public Task<List<TEntity>> GetAllAsync(CancellationToken cancellationToken);
     public Task<List<TEntity>> GetAllByIdsAsync(List<Guid> ids, CancellationToken cancellationToken);
+    public Task<List<TEntity>> GetAllWithRelatedDataAsync(CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includeProperties);
     public Task<TEntity?> GetByIdWithRelatedDataAsync(Guid entityId, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includeProperties);
 }

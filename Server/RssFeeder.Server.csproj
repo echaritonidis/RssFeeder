@@ -29,15 +29,8 @@
     <ProjectReference Include="..\Shared\RssFeeder.Shared.csproj" />
   </ItemGroup>
 
-
-  <ItemGroup>
-    <None Remove="Microsoft.EntityFrameworkCore.Sqlite" />
-    <None Remove="FluentValidation" />
-    <None Remove="Infrastructure\Validators\" />
-    <None Remove="System.Text.RegularExpressions" />
-    <None Remove="Infrastructure\Utils\" />
-  </ItemGroup>
   <ItemGroup>
     <Folder Include="Infrastructure\Validators\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 </Project>
