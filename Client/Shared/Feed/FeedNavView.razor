@@ -5,8 +5,7 @@
         <div class="feed-nav" @onclick="(async (_) => await OnFeedNavClickAsync(feedItem))">
             <div class="feed-item @(feedItem.Active ? "feed-item-active" : null)">
                 <p>@feedItem.Title</p>
-                <Icon Class="@(feedItem.Default ? "nav-icon default-icon-checked" : "nav-icon")" Name="IconName.Desktop" Float="Float.End" Clicked="((_) => OnDefaultToggle(feedItem))" />
-                <Icon Class="@(feedItem.Favorite ? "nav-icon favorite-icon-checked" : "nav-icon")" Name="IconName.Star" Float="Float.End" Clicked="((_) => OnFavoriteToggle(feedItem))" />
+                <Icon Class="nav-icon" Name="IconName.MoreVertical" Float="Float.End" Clicked="((_) => OnMoreClickAsync(feedItem))" />
             </div>
             @if (feedItem.FeedLabels != null)
             {
@@ -26,4 +25,9 @@
             }
         </div>
     }
+
+    <FeedNavOption @ref="FeedNavOptionRef"
+                    FeedItem="SelectedFeedItem"
+                    OnDefaultChangeCallback="OnDefaultToggle"
+                    OnFavoriteChangeCallback="OnFavoriteToggle" />
 }

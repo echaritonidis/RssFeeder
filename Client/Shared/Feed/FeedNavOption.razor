@@ -1,0 +1,40 @@
+﻿<Dropdown @ref="MoreOptionsRef" Display="Display.Inline">
+    @if (FeedItem != null)
+    {
+
+        <DropdownMenu>
+            <span Class="px-3 fw-bold">More options</span>
+            <DropdownDivider />
+            <DropdownItem>
+                <Icon Class="@(FeedItem.Default ? "nav-icon default-icon-checked" : "nav-icon")" IconSize="IconSize.Small" Display="Display.Inline" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Home" Clicked="((_) => OnDefaultChangeCallback.InvokeAsync(FeedItem))" />
+                <span class="dropdown-label">Default</span>
+            </DropdownItem>
+            <DropdownItem>
+                <Icon Class="@(FeedItem.Favorite ? "nav-icon favorite-icon-checked" : "nav-icon")" IconSize="IconSize.Small" Display="Display.Inline" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Star" Clicked="((_) => OnFavoriteChangeCallback.InvokeAsync(FeedItem))" />
+                <span class="dropdown-label">Favorite</span>
+            </DropdownItem>
+            <DropdownDivider />
+            <DropdownItem>
+                <Icon Class="nav-icon" IconSize="IconSize.Small" Display="Display.Inline" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.PenSquare" />
+                <span class="dropdown-label">Edit</span>
+            </DropdownItem>
+            <DropdownItem>
+                <Icon Class="nav-icon" IconSize="IconSize.Small" Display="Display.Inline" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Trash" />
+                <span class="dropdown-label">Remove</span>
+            </DropdownItem>
+        </DropdownMenu>
+    }
+</Dropdown>
+
+@code {
+    [Parameter] public FeedNavigation? FeedItem { get; set; }
+
+    [Parameter] public EventCallback<FeedNavigation> OnFavoriteChangeCallback { get; set; }
+
+    [Parameter] public EventCallback<FeedNavigation> OnDefaultChangeCallback { get; set; }
+
+    private Dropdown MoreOptionsRef;
+
+    public Dropdown GetRef() => MoreOptionsRef;
+}
+

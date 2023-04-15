@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Blazorise;
+using Microsoft.AspNetCore.Components;
 using RssFeeder.Shared.Model;
 
 namespace RssFeeder.Client.Shared.Feed;
@@ -12,6 +13,21 @@ public partial class FeedNavView
     [Parameter] public EventCallback<FeedNavigation> OnFavoriteChangeCallback { get; set; }
 
     [Parameter] public EventCallback<FeedNavigation> OnDefaultChangeCallback { get; set; }
+
+    protected FeedNavigation? SelectedFeedItem { get; set; }
+
+    private FeedNavOption FeedNavOptionRef;
+
+    private Task OnMoreClickAsync(FeedNavigation item)
+    {
+        SelectedFeedItem = item;
+
+        StateHasChanged();
+
+        var reference = FeedNavOptionRef.GetRef();
+
+        return reference.Show();
+    }
 
     private async Task OnFavoriteToggle(FeedNavigation item)
     {

@@ -51,16 +51,15 @@
         #main .left-panel .feed-nav .feed-item:hover {
             cursor: pointer;
         }
-            #main .left-panel .feed-nav .feed-item:hover a {
-                color: #8941bf !important;
-                text-decoration: underline !important;
-            }
 
         #main .left-panel .feed-nav .feed-item .nav-icon {
             color: gray;
             display: block;
-            height: 17px;
-            margin: 0 4px;
+            margin: 0 4px 0 0;
+        }
+
+        #main .left-panel .feed-nav .feed-item .dropdown-label {
+            font-size: 0.90em;
         }
 
         #main .left-panel .feed-nav .feed-item .favorite-icon-checked {
@@ -112,6 +111,7 @@
         #main .main-content .published {
             font-size: 0.9rem;
             margin: 0 0 5px 0;
+            color: #898989;
         }
         #main .main-content .desc {
             font-size: 0.95rem;
