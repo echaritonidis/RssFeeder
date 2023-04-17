@@ -1,16 +1,15 @@
-﻿<Dropdown @ref="MoreOptionsRef" Display="Display.Inline">
+﻿<Dropdown @ref="moreOptionsRef" Class="feed-context" Display="Display.Inline" Position="Position.Absolute">
     @if (FeedItem != null)
     {
-
         <DropdownMenu>
             <span Class="px-3 fw-bold">More options</span>
             <DropdownDivider />
-            <DropdownItem>
-                <Icon Class="@(FeedItem.Default ? "nav-icon default-icon-checked" : "nav-icon")" IconSize="IconSize.Small" Display="Display.Inline" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Home" Clicked="((_) => OnDefaultChangeCallback.InvokeAsync(FeedItem))" />
+            <DropdownItem Clicked="((_) => OnDefaultChangeCallback.InvokeAsync(FeedItem))">
+                <Icon Class="@(FeedItem.Default ? "nav-icon default-icon-checked" : "nav-icon")" IconSize="IconSize.Small" Display="Display.Inline" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Home" />
                 <span class="dropdown-label">Default</span>
             </DropdownItem>
-            <DropdownItem>
-                <Icon Class="@(FeedItem.Favorite ? "nav-icon favorite-icon-checked" : "nav-icon")" IconSize="IconSize.Small" Display="Display.Inline" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Star" Clicked="((_) => OnFavoriteChangeCallback.InvokeAsync(FeedItem))" />
+            <DropdownItem Clicked="((_) => OnFavoriteChangeCallback.InvokeAsync(FeedItem))">
+                <Icon Class="@(FeedItem.Favorite ? "nav-icon favorite-icon-checked" : "nav-icon")" IconSize="IconSize.Small" Display="Display.Inline" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Star" />
                 <span class="dropdown-label">Favorite</span>
             </DropdownItem>
             <DropdownDivider />
@@ -27,14 +26,27 @@
 </Dropdown>
 
 @code {
-    [Parameter] public FeedNavigation? FeedItem { get; set; }
+    private FeedNavigation? _feedItemValue;
+
+    [Parameter]
+    public FeedNavigation? FeedItem
+    {
+        get => _feedItemValue;
+        set
+        {
+            if (_feedItemValue == value) return;
+            _feedItemValue = value;
+        }
+    }
+
+    [Parameter] public EventCallback<FeedNavigation> FeedItemChanged { get; set; }
 
     [Parameter] public EventCallback<FeedNavigation> OnFavoriteChangeCallback { get; set; }
 
     [Parameter] public EventCallback<FeedNavigation> OnDefaultChangeCallback { get; set; }
 
-    private Dropdown MoreOptionsRef;
+    private Dropdown moreOptionsRef;
 
-    public Dropdown GetRef() => MoreOptionsRef;
+    public Dropdown GetRef() => moreOptionsRef;
 }
 
