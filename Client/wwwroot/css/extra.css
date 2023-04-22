@@ -115,3 +115,13 @@
             font-size: 0.95rem;
             margin: 0;
         }
+
+/* AddFeedModal */
+#feed-labels {
+    display: inline-block;
+    margin-top: 6px;
+}
+
+#feed-labels span.badge {
+    margin: 0 2px 0 2px;
+}

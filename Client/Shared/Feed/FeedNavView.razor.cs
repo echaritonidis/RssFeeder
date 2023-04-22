@@ -9,21 +9,14 @@ namespace RssFeeder.Client.Shared.Feed;
 public partial class FeedNavView : IDisposable
 {
     [Inject] IJSRuntime _jsRuntime { get; set; }
-
     [Parameter] public List<FeedNavigation> Model { get; set; }
-
     [Parameter] public EventCallback<FeedNavigation> OnSelectFeedCallback { get; set; }
-
     [Parameter] public EventCallback<FeedNavigation> OnFavoriteChangeCallback { get; set; }
-
     [Parameter] public EventCallback<FeedNavigation> OnDefaultChangeCallback { get; set; }
-
     [JSInvokable] public static async Task CloseDropDown() => await OnDomClickEventCallback?.Invoke();
 
-    protected FeedNavigation? SelectedFeedItem { get; set; }
-
+    private FeedNavigation? SelectedFeedItem;
     private FeedNavOption FeedNavOptionRef;
-
     private static Func<Task> OnDomClickEventCallback;
 
     public void Dispose()

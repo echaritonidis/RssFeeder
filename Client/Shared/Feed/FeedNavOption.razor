@@ -5,11 +5,11 @@
             <span Class="px-3 fw-bold">More options</span>
             <DropdownDivider />
             <DropdownItem Clicked="((_) => OnDefaultChangeCallback.InvokeAsync(FeedItem))">
-                <Icon Class="@(FeedItem.Default ? "nav-icon default-icon-checked" : "nav-icon")" IconSize="IconSize.Small" Display="Display.Inline" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Home" />
+                <Icon Class="@(FeedItem.Default ? "default-icon-checked" : "default-icon")" IconSize="IconSize.Small" Display="Display.Inline" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Home" />
                 <span class="dropdown-label">Default</span>
             </DropdownItem>
             <DropdownItem Clicked="((_) => OnFavoriteChangeCallback.InvokeAsync(FeedItem))">
-                <Icon Class="@(FeedItem.Favorite ? "nav-icon favorite-icon-checked" : "nav-icon")" IconSize="IconSize.Small" Display="Display.Inline" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Star" />
+                <Icon Class="@(FeedItem.Favorite ? "favorite-icon-checked" : "favorite-icon")" IconSize="IconSize.Small" Display="Display.Inline" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Star" />
                 <span class="dropdown-label">Favorite</span>
             </DropdownItem>
             <DropdownDivider />

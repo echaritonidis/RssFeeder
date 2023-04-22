@@ -40,9 +40,9 @@
                         <FieldLabel>Labels</FieldLabel>
                         <Row>
                             <Column ColumnSize="ColumnSize.Is10">
-                                <TextEdit @bind-Text="labelName" Pattern="[A-Za-z]{3}">
+                                <TextEdit @bind-Text="labelName" KeyPress="OnKeyPressInLabel" Pattern="[A-Za-z]{3}">
                                     <Feedback>
-                                        <ValidationError>Enter valid title!</ValidationError>
+                                        <ValidationError>Enter valid label!</ValidationError>
                                     </Feedback>
                                 </TextEdit>
                             </Column>
@@ -55,10 +55,12 @@
 
                         @if (feedNavigation.FeedLabels != null)
                         {
-                            foreach (var label in feedNavigation.FeedLabels)
-                            {
-                                <Badge Color="Color.Primary" CloseClicked="@(_ => OnBadgeClose(label))">@label.Name</Badge>
-                            }
+                            <div id="feed-labels">
+                                @foreach (var label in feedNavigation.FeedLabels)
+                                {
+                                    <Badge Color="Color.Primary" CloseClicked="@(_ => OnBadgeClose(label))">@label.Name</Badge>
+                                }
+                            </div>
                         }
 
                     </Field>
