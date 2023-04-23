@@ -1,5 +1,6 @@
 ﻿using Blazorise;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using RssFeeder.Shared.Extensions;
 using RssFeeder.Shared.Model;
 
@@ -50,12 +51,20 @@ public partial class AddFeedModalView
         labelName = string.Empty;
     }
 
-    protected void OnBadgeClose(FeedLabel label)
+    private void OnBadgeClose(FeedLabel label)
     {
         feedNavigation.FeedLabels?.Remove(label);
     }
 
-    protected void ValidateHyperlink(ValidatorEventArgs e)
+    private void OnKeyPressInLabel(KeyboardEventArgs eventArgs)
+    {
+        if (eventArgs.Key == "Enter")
+        {
+            OnAddNewLabel();
+        }
+    }
+
+    private void ValidateHyperlink(ValidatorEventArgs e)
     {
         var link = Convert.ToString(e.Value);
 

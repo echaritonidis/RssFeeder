@@ -30,6 +30,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 });
 
 builder.Services.AddTransient(typeof(ISQLiteRepository<>), typeof(SQLiteRepository<>));
+builder.Services.AddTransient<ILabelRepository, LabelRepository>();
 builder.Services.AddTransient<IFeedRepository, FeedRepository>();
 builder.Services.AddTransient<IFeedService, FeedService>();
 

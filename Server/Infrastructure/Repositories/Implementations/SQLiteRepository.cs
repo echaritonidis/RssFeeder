@@ -22,6 +22,11 @@ public class SQLiteRepository<TEntity> : ISQLiteRepository<TEntity> where TEntit
         return _entitySet.AsNoTracking().ToListAsync(cancellationToken);
     }
 
+    public Task<List<TEntity>> GetAllPredicatedAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
+    {
+        return _entitySet.AsNoTracking().Where(predicate).ToListAsync(cancellationToken);
+    }
+
     public Task<List<TEntity>> GetAllByIdsAsync(List<Guid> ids, CancellationToken cancellationToken)
     {
         return _entitySet.AsNoTracking().Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
@@ -54,6 +59,21 @@ public class SQLiteRepository<TEntity> : ISQLiteRepository<TEntity> where TEntit
         if (entityToDelete != null)
         {
             _entitySet.Remove(entityToDelete);
+            await _dataContext.SaveChangesAsync(cancellationToken);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public async Task<bool> DeleteByIds(List<Guid> entityIds, CancellationToken cancellationToken)
+    {
+        var entitiesToDelete = await _entitySet.Where(x => entityIds.Contains(x.Id)).ToListAsync(cancellationToken);
+
+        if (entitiesToDelete?.Count > 0)
+        {
+            _entitySet.RemoveRange(entitiesToDelete);
             await _dataContext.SaveChangesAsync(cancellationToken);
 
             return true;
