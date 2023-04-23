@@ -4,13 +4,14 @@ using RssFeeder.Client.Events;
 using RssFeeder.Shared.Extensions;
 using RssFeeder.Shared.Model;
 using System.Net.Http.Json;
-using Blazorise;
+using RssFeeder.Client.Shared;
 using RssFeeder.Client.Shared.Feed;
 
 namespace RssFeeder.Client.Pages;
 
 public partial class Index : IDisposable
 {
+    [CascadingParameter] public MainLayout _mainLayout { get; set; }
     [Inject] public IJSRuntime _jsRuntime { get; set; } = default!;
     [Inject] public HttpClient _httpClient { get; set; } = default!;
     [Inject] public NotifyEventService _notifyEventService { get; set; } = default!;
@@ -19,7 +20,7 @@ public partial class Index : IDisposable
     public List<FeedContent> FeedContents { get; set; } = default!;
 
     protected bool ContentLoading { get; set; }
-
+    
     private EditFeedModalView editFeedModalViewRef = default!;
 
     public void Dispose()
@@ -99,7 +100,10 @@ public partial class Index : IDisposable
         void HandleUpdateResult(bool updated)
         {
             if (updated) StateHasChanged();
-            // TODO: else display popup error 
+            else
+            {
+                _mainLayout.ShowError("We apologize, but we could not update the requested information. Please check your input and try again. If the issue persists, contact support.");
+            }
         }
 
         async Task SaveModalCallback(FeedNavigation updatedFeed)
@@ -125,7 +129,10 @@ public partial class Index : IDisposable
         void HandleDeleteResult(bool deleted)
         {
             if (deleted) FeedNavigations.RemoveAll(x => x.Id == id);
-            // TODO: else display popup error 
+            else
+            {
+                _mainLayout.ShowError("Sorry, we were unable to delete the requested item. Please try again later or contact support.");
+            }
             
             StateHasChanged();
         }

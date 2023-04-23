@@ -1,4 +1,6 @@
-﻿#nav-wrapper {
+﻿.alert-error { width: 800px; margin: 0 auto; }
+
+#nav-wrapper {
     background-color: antiquewhite;
 }
     #nav-menu {
