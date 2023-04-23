@@ -26,6 +26,5 @@
 
   <ItemGroup>
     <Folder Include="Events\" />
-    <Folder Include="Shared\Feed\" />
   </ItemGroup>
 </Project>

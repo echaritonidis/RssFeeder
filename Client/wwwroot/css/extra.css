@@ -31,32 +31,35 @@
         height: 600px;
         grid-area: leftPanel;
     }
-
-        #main .left-panel .feed-nav .feed-item {
-            padding: 2px 0;
-            display: grid;
-            grid-template-columns: auto 24px 24px;
-            grid-template-rows: 28px;
-            align-items: center;
+        #main .left-panel .feed-nav {
+            margin-bottom: 10px;
         }
-            #main .left-panel .feed-nav .feed-item p { margin: 0; }
-            #main .left-panel .feed-nav .feed-item:hover p,
-            #main .left-panel .feed-nav .feed-item-active p {
-                color: #ffcc77;
+            #main .left-panel .feed-nav .feed-item {
+                padding: 2px 0;
+                display: grid;
+                grid-template-columns: auto 24px 24px;
+                grid-template-rows: 28px;
+                align-items: center;
+                cursor: pointer;
             }
-            #main .left-panel #main .left-panel .feed-nav .feed-item p {
-                display: inline;
-                font-size: 0.95rem;
+                #main .left-panel .feed-nav .feed-item p { margin: 0; }
+                #main .left-panel .feed-nav .feed-item:hover p,
+                #main .left-panel .feed-nav .feed-item-active p {
+                    color: #ffcc77;
+                }
+                #main .left-panel #main .left-panel .feed-nav .feed-item p {
+                    display: inline;
+                    font-size: 0.95rem;
+                }
+    
+            #main .left-panel .feed-nav .feed-labels span {
+                display: inline-block;
+                border-radius: 10px;
+                background-color: aquamarine;
+                padding: 0 6px 2px;
+                margin-right: 4px;
+                font-size: 0.75em;
             }
-
-        #main .left-panel .feed-nav .feed-labels span {
-            display: inline-block;
-            border-radius: 10px;
-            background-color: aquamarine;
-            padding: 0 6px 2px;
-            margin-right: 4px;
-            font-size: 0.75em;
-        }
 
         #main .left-panel .feed-context .nav-icon {
             color: gray;

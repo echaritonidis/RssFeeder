@@ -4,6 +4,8 @@ using RssFeeder.Client.Events;
 using RssFeeder.Shared.Extensions;
 using RssFeeder.Shared.Model;
 using System.Net.Http.Json;
+using Blazorise;
+using RssFeeder.Client.Shared.Feed;
 
 namespace RssFeeder.Client.Pages;
 
@@ -12,11 +14,13 @@ public partial class Index : IDisposable
     [Inject] public IJSRuntime _jsRuntime { get; set; } = default!;
     [Inject] public HttpClient _httpClient { get; set; } = default!;
     [Inject] public NotifyEventService _notifyEventService { get; set; } = default!;
-
+    
     public List<FeedNavigation> FeedNavigations { get; set; } = default!;
     public List<FeedContent> FeedContents { get; set; } = default!;
 
     protected bool ContentLoading { get; set; }
+
+    private EditFeedModalView editFeedModalViewRef = default!;
 
     public void Dispose()
     {
@@ -90,6 +94,55 @@ public partial class Index : IDisposable
         await _httpClient.PutAsJsonAsync("/api/v1.0/Feed/Update", feedNavigation);
     }
 
+    protected async Task OnShowEditContext(FeedNavigation feedNavigation)
+    {
+        void HandleUpdateResult(bool updated)
+        {
+            if (updated) StateHasChanged();
+            // TODO: else display popup error 
+        }
+
+        async Task SaveModalCallback(FeedNavigation updatedFeed)
+        {
+            var updateResponse = await _httpClient.PutAsJsonAsync($"/api/v1.0/Feed/Update", updatedFeed);
+
+            if (updateResponse.IsSuccessStatusCode)
+            {
+                StateHasChanged();
+
+                HandleUpdateResult(true);
+                return;
+            }
+
+            HandleUpdateResult(false);
+        }
+
+        await editFeedModalViewRef.ShowModal(feedNavigation, SaveModalCallback);
+    }
+
+    protected async Task OnDeleteNavigation(Guid id)
+    {
+        void HandleDeleteResult(bool deleted)
+        {
+            if (deleted) FeedNavigations.RemoveAll(x => x.Id == id);
+            // TODO: else display popup error 
+            
+            StateHasChanged();
+        }
+        
+        var deletedResponse = await _httpClient.DeleteAsync($"/api/v1.0/Feed/Delete?id={id}");
+
+        if (deletedResponse.IsSuccessStatusCode)
+        {
+            FeedContents = default!;
+            
+            HandleDeleteResult(true);
+            return;
+        }
+        
+        HandleDeleteResult(false);
+    }
+    
     protected async Task ExportExcel()
     {
         var result = await _httpClient.PostAsJsonAsync("/api/v1.0/Feed/ExportExcel", FeedContents);
@@ -102,4 +155,3 @@ public partial class Index : IDisposable
         }
     }
 }
-

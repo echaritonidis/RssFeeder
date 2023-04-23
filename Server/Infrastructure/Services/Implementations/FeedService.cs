@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.Wordprocessing;
 using FluentValidation;
 using FluentValidation.Results;
 using OneOf;
@@ -14,6 +13,7 @@ namespace RssFeeder.Server.Infrastructure.Services.Implementations;
 public class FeedService : IFeedService
 {
     private readonly IFeedRepository _feedRepository;
+    private readonly ILabelRepository _labelRepository;
     private readonly IExtractContent _extractContent;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IValidator<FeedNavigation> _feedNavigationValidator;
@@ -21,12 +21,14 @@ public class FeedService : IFeedService
     public FeedService
     (
         IFeedRepository feedRepository,
+        ILabelRepository labelRepository,
         IExtractContent extractContent,
         IHttpClientFactory httpClientFactory,
         IValidator<FeedNavigation> feedNavigationValidator
     )
     {
         _feedRepository = feedRepository;
+        _labelRepository = labelRepository;
         _extractContent = extractContent;
         _httpClientFactory = httpClientFactory;
         _feedNavigationValidator = feedNavigationValidator;
@@ -43,6 +45,7 @@ public class FeedService : IFeedService
             Title = x.Title,
             FeedLabels = x.Labels?.Select(label => new FeedLabel
             {
+                Id = label.Id,
                 Name = label.Name,
                 Color = label.Color
             }).ToList() ?? new(),
@@ -65,7 +68,6 @@ public class FeedService : IFeedService
             Title = newFeedNavigation.Title,
             Labels = newFeedNavigation.FeedLabels?.Select(label => new LabelDto
             {
-                Id = label.Id,
                 Name = label.Name,
                 Color = label.Color
             }).ToList() ?? new(),
@@ -80,6 +82,10 @@ public class FeedService : IFeedService
 
         if (!validationResult.IsValid) return validationResult.Errors;
 
+        var labelIdsToExclude = feedNavigation.FeedLabels?.Select(x => x.Id).ToList();
+        
+        await _labelRepository.RemoveLabelsByFeedId(feedNavigation.Id, labelIdsToExclude, cancellationToken);
+        
         await _feedRepository.UpdateFeed(new FeedDto
         {
             Id = feedNavigation.Id,

@@ -5,7 +5,7 @@
         <div class="feed-nav" @onclick="(async (_) => await OnFeedNavClickAsync(feedItem))">
             <div class="feed-item @(feedItem.Active ? "feed-item-active" : null)">
                 <p>@feedItem.Title</p>
-                <Icon Class="nav-icon" Name="IconName.MoreVertical" Float="Float.End" Clicked="((e) => OnMoreClickAsync(e, feedItem))" />
+                <Icon Class="nav-icon" Name="IconName.MoreVertical" Float="Float.End" @onclick:stopPropagation="true" Clicked="((e) => OnMoreClickAsync(e, feedItem))" />
             </div>
             @if (feedItem.FeedLabels != null)
             {
@@ -29,5 +29,7 @@
     <FeedNavOption @ref="FeedNavOptionRef"
                     @bind-FeedItem="SelectedFeedItem"
                     OnDefaultChangeCallback="OnDefaultToggle"
-                    OnFavoriteChangeCallback="OnFavoriteToggle" />
+                    OnFavoriteChangeCallback="OnFavoriteToggle"
+                    OnEditCallback="OnEditContext"
+                    OnDeleteCallback="OnDeleteRecord"/>
 }

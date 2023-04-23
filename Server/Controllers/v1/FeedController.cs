@@ -77,7 +77,7 @@ public class FeedController : ControllerBase
             id =>
             {
                 _logger.LogCreated(id);
-                return Ok($"Feed with Id {id} was created successfully");
+                return Ok($"Feed with Id {id.ToString()} was created successfully");
             },
             notValidFeedNavigation =>
             {
@@ -97,7 +97,7 @@ public class FeedController : ControllerBase
             id =>
             {
                 _logger.LogUpdated(id);
-                return Ok($"Feed with Id {id} was updated successfully");
+                return Ok($"Feed with Id {id.ToString()} was updated successfully");
             },
             notValidFeedNavigation =>
             {
@@ -140,10 +140,10 @@ public class FeedController : ControllerBase
                 if (success)
                 {
                     _logger.LogDeleted(id);
-                    return Ok($"Feed with Id {id} was deleted successfully");
+                    return Ok($"Feed with Id {id.ToString()} was deleted successfully");
                 }
 
-                return Ok($"Feed with Id {id} wasn't deleted");
+                return Ok($"Feed with Id {id.ToString()} wasn't deleted");
             },
             exceptionOccurred =>
             {

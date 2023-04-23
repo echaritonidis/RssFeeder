@@ -13,6 +13,8 @@ public partial class FeedNavView : IDisposable
     [Parameter] public EventCallback<FeedNavigation> OnSelectFeedCallback { get; set; }
     [Parameter] public EventCallback<FeedNavigation> OnFavoriteChangeCallback { get; set; }
     [Parameter] public EventCallback<FeedNavigation> OnDefaultChangeCallback { get; set; }
+    [Parameter] public Func<FeedNavigation, Task> OnEditCallback { get; set; }
+    [Parameter] public Func<Guid, Task> OnDeleteCallback { get; set; }
     [JSInvokable] public static async Task CloseDropDown() => await OnDomClickEventCallback?.Invoke();
 
     private FeedNavigation? SelectedFeedItem;
@@ -67,6 +69,10 @@ public partial class FeedNavView : IDisposable
 
         await this.OnDefaultChangeCallback.InvokeAsync(item);
     }
+
+    private async Task OnEditContext(FeedNavigation item) => await OnEditCallback(item);
+    
+    private async Task OnDeleteRecord(FeedNavigation item) => await OnDeleteCallback(item.Id);
 
     private async Task OnFeedNavClickAsync(FeedNavigation item)
     {

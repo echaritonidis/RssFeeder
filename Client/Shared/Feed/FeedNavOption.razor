@@ -13,40 +13,14 @@
                 <span class="dropdown-label">Favorite</span>
             </DropdownItem>
             <DropdownDivider />
-            <DropdownItem>
-                <Icon Class="nav-icon" IconSize="IconSize.Small" Display="Display.Inline" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.PenSquare" />
+            <DropdownItem Clicked="((_) => OnEditCallback.InvokeAsync(FeedItem))">
+                <Icon IconSize="IconSize.Small" Display="Display.Inline" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.PenSquare" />
                 <span class="dropdown-label">Edit</span>
             </DropdownItem>
-            <DropdownItem>
-                <Icon Class="nav-icon" IconSize="IconSize.Small" Display="Display.Inline" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Trash" />
+            <DropdownItem Clicked="((_) => OnDeleteCallback.InvokeAsync(FeedItem))">
+                <Icon IconSize="IconSize.Small" Display="Display.Inline" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Trash" />
                 <span class="dropdown-label">Remove</span>
             </DropdownItem>
         </DropdownMenu>
     }
 </Dropdown>
-
-@code {
-    private FeedNavigation? _feedItemValue;
-
-    [Parameter]
-    public FeedNavigation? FeedItem
-    {
-        get => _feedItemValue;
-        set
-        {
-            if (_feedItemValue == value) return;
-            _feedItemValue = value;
-        }
-    }
-
-    [Parameter] public EventCallback<FeedNavigation> FeedItemChanged { get; set; }
-
-    [Parameter] public EventCallback<FeedNavigation> OnFavoriteChangeCallback { get; set; }
-
-    [Parameter] public EventCallback<FeedNavigation> OnDefaultChangeCallback { get; set; }
-
-    private Dropdown moreOptionsRef;
-
-    public Dropdown GetRef() => moreOptionsRef;
-}
-

@@ -28,9 +28,4 @@
     <ProjectReference Include="..\Client\RssFeeder.Client.csproj" />
     <ProjectReference Include="..\Shared\RssFeeder.Shared.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Infrastructure\Validators\" />
-    <Folder Include="Migrations\" />
-  </ItemGroup>
 </Project>

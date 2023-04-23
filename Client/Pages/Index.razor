@@ -6,7 +6,9 @@
     <FeedNavView Model="@FeedNavigations"
                  OnSelectFeedCallback="OnSelectFeed"
                  OnDefaultChangeCallback="OnDefaultToggle"
-                 OnFavoriteChangeCallback="OnFavoriteToggle" />
+                 OnFavoriteChangeCallback="OnFavoriteToggle"
+                 OnEditCallback="OnShowEditContext"
+                 OnDeleteCallback="OnDeleteNavigation"/>
 </div>
 
 <div class="main-content">
@@ -22,3 +24,5 @@
         <FeedContentView Model="@FeedContents" />
     }
 </div>
+
+<EditFeedModalView @ref="editFeedModalViewRef" />
