@@ -1,0 +1,16 @@
+﻿@if (Model != null)
+{
+    foreach (var feedNavigationGroup in  Model)
+    {
+        <div class="feed-group">
+            <div class="feed-group-item @(feedNavigationGroup.FeedNavigations.Any(n => n.Active) ? "feed-group-item-active" : null)">
+                <p>@feedNavigationGroup.Title</p>
+                
+                <FeedNavView Model="@feedNavigationGroup.FeedNavigations"
+                             OnContentLoadingCallback="OnContentLoadingChange"
+                             OnContentDataCallback="OnContentDataChange" />
+            </div>
+        </div>
+        
+    }
+}

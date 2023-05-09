@@ -57,7 +57,7 @@ public class FeedService : IFeedService
 
     public async Task<OneOf<Guid, List<ValidationFailure>>> InsertFeed(FeedNavigation newFeedNavigation, CancellationToken cancellationToken)
     {
-        var validationResult = await _feedNavigationValidator.ValidateAsync(newFeedNavigation);
+        var validationResult = await _feedNavigationValidator.ValidateAsync(newFeedNavigation, cancellationToken);
 
         if (!validationResult.IsValid) return validationResult.Errors;
 
@@ -78,11 +78,11 @@ public class FeedService : IFeedService
 
     public async Task<OneOf<Guid, List<ValidationFailure>>> UpdateFeed(FeedNavigation feedNavigation, CancellationToken cancellationToken)
     {
-        var validationResult = await _feedNavigationValidator.ValidateAsync(feedNavigation);
+        var validationResult = await _feedNavigationValidator.ValidateAsync(feedNavigation, cancellationToken);
 
         if (!validationResult.IsValid) return validationResult.Errors;
 
-        var labelIdsToExclude = feedNavigation.FeedLabels?.Select(x => x.Id).ToList();
+        var labelIdsToExclude = feedNavigation.FeedLabels?.Select(x => x.Id).ToList() ?? new();
         
         await _labelRepository.RemoveLabelsByFeedId(feedNavigation.Id, labelIdsToExclude, cancellationToken);
         
@@ -106,7 +106,7 @@ public class FeedService : IFeedService
 
     public async Task<OneOf<bool, ValidationFailure>> ResetDefault(List<Guid> ids, CancellationToken cancellationToken)
     {
-        if (ids?.Count == 0) return new ValidationFailure("Ids", "Please provide Id's to reset.");
+        if (ids is null || ids.Count == 0) return new ValidationFailure("Ids", "Please provide Id's to reset.");
 
         return await _feedRepository.ResetFeedDefault(ids, cancellationToken);
     }
@@ -135,7 +135,7 @@ public class FeedService : IFeedService
             return new CustomHttpRequestException(response.StatusCode, response.ReasonPhrase);
         }
 
-        var xmlContent = await response.Content.ReadAsStringAsync();
+        var xmlContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
         if (string.IsNullOrEmpty(xmlContent))
         {

@@ -27,9 +27,11 @@
     }
 
     <FeedNavOption @ref="FeedNavOptionRef"
-                    @bind-FeedItem="SelectedFeedItem"
-                    OnDefaultChangeCallback="OnDefaultToggle"
-                    OnFavoriteChangeCallback="OnFavoriteToggle"
-                    OnEditCallback="OnEditContext"
-                    OnDeleteCallback="OnDeleteRecord"/>
+                   @bind-FeedItem="SelectedFeedItem"
+                   OnDefaultChangeCallback="OnDefaultToggle"
+                   OnFavoriteChangeCallback="OnFavoriteToggle"
+                   OnEditCallback="OnEditContext"
+                   OnDeleteCallback="OnDeleteRecord"/>
+    
+    <EditFeedModalView @ref="editFeedModalViewRef" />
 }

@@ -31,7 +31,10 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddTransient(typeof(ISQLiteRepository<>), typeof(SQLiteRepository<>));
 builder.Services.AddTransient<ILabelRepository, LabelRepository>();
+builder.Services.AddTransient<IFeedGroupRepository, FeedGroupRepository>();
 builder.Services.AddTransient<IFeedRepository, FeedRepository>();
+
+builder.Services.AddTransient<IFeedGroupService, FeedGroupService>();
 builder.Services.AddTransient<IFeedService, FeedService>();
 
 builder.Services.AddTransient<IExtractContent, ExtractContent>();
@@ -54,6 +57,7 @@ builder.Services.AddApiVersioning(opt =>
 
 // Validators
 builder.Services.AddScoped<IValidator<FeedNavigation>, FeedNavigationValidator>();
+builder.Services.AddScoped<IValidator<FeedNavigationGroup>, FeedNavigationGroupValidator>();
 
 // Logging
 builder.Logging.ClearProviders();
