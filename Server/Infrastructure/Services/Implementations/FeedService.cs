@@ -13,6 +13,7 @@ namespace RssFeeder.Server.Infrastructure.Services.Implementations;
 public class FeedService : IFeedService
 {
     private readonly IFeedRepository _feedRepository;
+    private readonly IFeedGroupRepository _feedGroupRepository;
     private readonly ILabelRepository _labelRepository;
     private readonly IExtractContent _extractContent;
     private readonly IHttpClientFactory _httpClientFactory;
@@ -21,6 +22,7 @@ public class FeedService : IFeedService
     public FeedService
     (
         IFeedRepository feedRepository,
+        IFeedGroupRepository feedGroupRepository,
         ILabelRepository labelRepository,
         IExtractContent extractContent,
         IHttpClientFactory httpClientFactory,
@@ -28,6 +30,7 @@ public class FeedService : IFeedService
     )
     {
         _feedRepository = feedRepository;
+        _feedGroupRepository = feedGroupRepository;
         _labelRepository = labelRepository;
         _extractContent = extractContent;
         _httpClientFactory = httpClientFactory;
@@ -61,7 +64,7 @@ public class FeedService : IFeedService
 
         if (!validationResult.IsValid) return validationResult.Errors;
 
-        return await _feedRepository.InsertFeed(new FeedDto
+        return await _feedGroupRepository.InsertFeed(new FeedDto
         {
             Id = newFeedNavigation.Id,
             Href = newFeedNavigation.Href,

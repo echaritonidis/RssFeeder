@@ -14,7 +14,7 @@ public class FeedNavigationController : ControllerBase
 {
     private readonly ILogger<FeedNavigationController> _logger;
     private readonly IFeedService _feedService;
-
+    
     public FeedNavigationController
     (
         ILogger<FeedNavigationController> logger,
@@ -24,10 +24,10 @@ public class FeedNavigationController : ControllerBase
         _logger = logger;
         _feedService = feedService;
     }
-
+    
     [OutputCache(Duration = 3600)]
-    [HttpGet("GetAll")]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
+    [HttpGet("GetFeeds")]
+    public async Task<IActionResult> GetFeeds(CancellationToken cancellationToken = default)
     {
         var items = await _feedService.GetAllFeeds(cancellationToken);
 
@@ -86,7 +86,7 @@ public class FeedNavigationController : ControllerBase
             }
         );
     }
-
+    
     [HttpPut("Update")]
     public async Task<IActionResult> Update(FeedNavigation feedNavigation, CancellationToken cancellationToken = default)
     {

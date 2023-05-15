@@ -14,7 +14,7 @@ public class FeedNavigationGroupController : ControllerBase
 {
     private readonly ILogger<FeedNavigationGroupController> _logger;
     private readonly IFeedGroupService _feedGroupService;
-
+    
     public FeedNavigationGroupController
     (
         ILogger<FeedNavigationGroupController> logger,
@@ -26,8 +26,8 @@ public class FeedNavigationGroupController : ControllerBase
     }
 
     [OutputCache(Duration = 3600)]
-    [HttpGet("GetAll")]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
+    [HttpGet("GetFeedGroups")]
+    public async Task<IActionResult> GetFeedGroups(CancellationToken cancellationToken = default)
     {
         var items = await _feedGroupService.GetGroupedFeeds(cancellationToken);
 

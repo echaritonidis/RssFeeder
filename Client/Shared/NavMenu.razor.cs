@@ -22,7 +22,7 @@ public partial class NavMenu
     async Task OnSaveResponse(FeedNavigation feedNavigation)
     {
         // TODO: Do something with the response like show an alert
-        await _httpClient.PostAsJsonAsync<FeedNavigation>("/api/v1.0/Feed", feedNavigation);
+        await _httpClient.PostAsJsonAsync<FeedNavigation>("/api/v1.0/FeedNavigation", feedNavigation);
 
         _notifyEventService.NotifyEventClick(feedNavigation);
     }

@@ -15,7 +15,7 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
 
         public async Task<List<FeedDto>> GetAllFeeds(CancellationToken cancellationToken)
         {
-            var items = await _repository.GetAllWithRelatedDataAsync(cancellationToken, o => o.Labels);
+            var items = await _repository.GetAllWithRelatedDataAsync(noTracking: true, cancellationToken, o => o.Labels);
 
             return items.Select(x => new FeedDto
             {
@@ -57,7 +57,7 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
 
         public async Task UpdateFeed(FeedDto feed, CancellationToken cancellationToken)
         {
-            var item = await _repository.GetByIdWithRelatedDataAsync(feed.Id, cancellationToken, o => o.Labels);
+            var item = await _repository.GetByIdWithRelatedDataAsync(feed.Id, noTracking: true, cancellationToken, o => o.Labels);
 
             if (item is null) return;
 
@@ -81,7 +81,7 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
 
         public async Task<bool> ResetFeedDefault(List<Guid> ids, CancellationToken cancellationToken)
         {
-            var items = await _repository.GetAllByIdsAsync(ids, cancellationToken);
+            var items = await _repository.GetAllByIdsAsync(ids, noTracking: true, cancellationToken);
             var updateItems = items.Select(i => i with { Default = false }).ToList();
             return ids.Count == (await _repository.UpdateRangeAsync(updateItems, cancellationToken));
         }

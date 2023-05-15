@@ -67,7 +67,7 @@ public class FeedGroupService : IFeedGroupService
             Order = newFeedGroup.Order
         }, cancellationToken);
     }
-
+    
     public async Task<OneOf<Guid, List<ValidationFailure>>> UpdateGroup(FeedNavigationGroup feedGroup, CancellationToken cancellationToken)
     {
         var validationResult = await _feedNavigationGroupValidator.ValidateAsync(feedGroup, cancellationToken);

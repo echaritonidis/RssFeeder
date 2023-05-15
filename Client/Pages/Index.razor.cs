@@ -31,7 +31,7 @@ public partial class Index : IDisposable
 
     protected async Task LoadData()
     {
-        var response = await _httpClient.GetAsync("/api/v1.0/FeedNavigationGroup/GetAll");
+        var response = await _httpClient.GetAsync("/api/v1.0/FeedNavigationGroup/GetFeedGroups");
 
         if (response.IsSuccessStatusCode)
         {

@@ -16,30 +16,37 @@ public class SQLiteRepository<TEntity> : ISQLiteRepository<TEntity> where TEntit
         _dataContext = dataContext;
         _entitySet = dataContext.Set<TEntity>();
     }
+    
+    public async Task Commit(CancellationToken cancellationToken) => await _dataContext.SaveChangesAsync(cancellationToken);
 
-    public Task<List<TEntity>> GetAllAsync(CancellationToken cancellationToken)
+    private IQueryable<TEntity> GetQueryable(bool noTracking)
     {
-        return _entitySet.AsNoTracking().ToListAsync(cancellationToken);
+        return noTracking ? _entitySet.AsNoTracking() : _entitySet;
+    }
+    
+    public Task<List<TEntity>> GetAllAsync(bool noTracking, CancellationToken cancellationToken)
+    {
+        return this.GetQueryable(noTracking).ToListAsync(cancellationToken);
     }
 
-    public Task<List<TEntity>> GetAllPredicatedAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
+    public Task<List<TEntity>> GetAllPredicatedAsync(Expression<Func<TEntity, bool>> predicate, bool noTracking, CancellationToken cancellationToken)
     {
-        return _entitySet.AsNoTracking().Where(predicate).ToListAsync(cancellationToken);
+        return this.GetQueryable(noTracking).Where(predicate).ToListAsync(cancellationToken);
     }
 
-    public Task<List<TEntity>> GetAllByIdsAsync(List<Guid> ids, CancellationToken cancellationToken)
+    public Task<List<TEntity>> GetAllByIdsAsync(List<Guid> ids, bool noTracking, CancellationToken cancellationToken)
     {
-        return _entitySet.AsNoTracking().Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
+        return this.GetQueryable(noTracking).Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
     }
 
     public async Task<Guid> InsertAsync(TEntity obj, CancellationToken cancellationToken)
     {
-        await _entitySet.AddAsync(obj);
+        await _entitySet.AddAsync(obj, cancellationToken);
         await _dataContext.SaveChangesAsync(cancellationToken);
 
         return obj.Id;
     }
-
+    
     public async Task UpdateAsync(TEntity obj, CancellationToken cancellationToken)
     {
         _entitySet.Update(obj);
@@ -82,9 +89,9 @@ public class SQLiteRepository<TEntity> : ISQLiteRepository<TEntity> where TEntit
         return false;
     }
 
-    public async Task<List<TEntity>> GetAllWithRelatedDataAsync(CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includeProperties)
+    public async Task<List<TEntity>> GetAllWithRelatedDataAsync(bool noTracking, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includeProperties)
     {
-        var query = _entitySet.AsNoTracking();
+        var query = this.GetQueryable(noTracking);
 
         if (includeProperties != null)
         {
@@ -97,9 +104,9 @@ public class SQLiteRepository<TEntity> : ISQLiteRepository<TEntity> where TEntit
         return await query.ToListAsync(cancellationToken);
     }
 
-    public async Task<TEntity?> GetByIdWithRelatedDataAsync(Guid entityId, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includeProperties)
+    public async Task<TEntity?> GetByIdWithRelatedDataAsync(Guid entityId, bool noTracking, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includeProperties)
     {
-        var query = _entitySet.AsNoTracking().Where(x => x.Id == entityId);
+        var query = this.GetQueryable(noTracking).Where(x => x.Id == entityId);
 
         if (includeProperties != null)
         {
