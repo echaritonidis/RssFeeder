@@ -13,23 +13,23 @@ namespace RssFeeder.Server.Controllers.v1;
 public class FeedNavigationGroupController : ControllerBase
 {
     private readonly ILogger<FeedNavigationGroupController> _logger;
-    private readonly IFeedGroupService _feedGroupService;
+    private readonly IFeedNavigationGroupService _feedNavigationGroupService;
     
     public FeedNavigationGroupController
     (
         ILogger<FeedNavigationGroupController> logger,
-        IFeedGroupService feedGroupService
+        IFeedNavigationGroupService feedNavigationGroupService
     )
     {
         _logger = logger;
-        _feedGroupService = feedGroupService;
+        _feedNavigationGroupService = feedNavigationGroupService;
     }
 
     [OutputCache(Duration = 3600)]
     [HttpGet("GetFeedGroups")]
     public async Task<IActionResult> GetFeedGroups(CancellationToken cancellationToken = default)
     {
-        var items = await _feedGroupService.GetGroupedFeeds(cancellationToken);
+        var items = await _feedNavigationGroupService.GetGroupedFeeds(cancellationToken);
 
         _logger.LogGetAll(items.Count);
 
@@ -39,7 +39,7 @@ public class FeedNavigationGroupController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(FeedNavigationGroup newFeedNavigationGroup, CancellationToken cancellationToken = default)
     {
-        var oneInsertedOf = await _feedGroupService.InsertGroup(newFeedNavigationGroup, cancellationToken);
+        var oneInsertedOf = await _feedNavigationGroupService.InsertGroup(newFeedNavigationGroup, cancellationToken);
 
         return oneInsertedOf.Match<IActionResult>
         (
@@ -59,7 +59,7 @@ public class FeedNavigationGroupController : ControllerBase
     [HttpPut("Update")]
     public async Task<IActionResult> Update(FeedNavigationGroup feedNavigationGroup, CancellationToken cancellationToken = default)
     {
-        var oneUpdatedOf = await _feedGroupService.UpdateGroup(feedNavigationGroup, cancellationToken);
+        var oneUpdatedOf = await _feedNavigationGroupService.UpdateGroup(feedNavigationGroup, cancellationToken);
 
         return oneUpdatedOf.Match<IActionResult>
         (
@@ -79,7 +79,7 @@ public class FeedNavigationGroupController : ControllerBase
     [HttpDelete("Delete")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
     {
-        var oneDeleteOf = await _feedGroupService.DeleteGroup(id, cancellationToken);
+        var oneDeleteOf = await _feedNavigationGroupService.DeleteGroup(id, cancellationToken);
 
         return oneDeleteOf.Match<IActionResult>
         (

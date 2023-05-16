@@ -31,11 +31,11 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddTransient(typeof(ISQLiteRepository<>), typeof(SQLiteRepository<>));
 builder.Services.AddTransient<ILabelRepository, LabelRepository>();
-builder.Services.AddTransient<IFeedGroupRepository, FeedGroupRepository>();
-builder.Services.AddTransient<IFeedRepository, FeedRepository>();
+builder.Services.AddTransient<IFeedNavigationGroupRepository, FeedNavigationGroupRepository>();
+builder.Services.AddTransient<IFeedNavigationRepository, FeedNavigationRepository>();
 
-builder.Services.AddTransient<IFeedGroupService, FeedGroupService>();
-builder.Services.AddTransient<IFeedService, FeedService>();
+builder.Services.AddTransient<IFeedNavigationGroupService, FeedNavigationGroupService>();
+builder.Services.AddTransient<IFeedNavigationService, FeedNavigationService>();
 
 builder.Services.AddTransient<IExtractContent, ExtractContent>();
 builder.Services.AddSingleton<DateRegexUtil>();

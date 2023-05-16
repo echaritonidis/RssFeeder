@@ -6,7 +6,7 @@ using RssFeeder.Shared.Model;
 
 namespace RssFeeder.Server.Infrastructure.Services.Contracts;
 
-public interface IFeedService 
+public interface IFeedNavigationService 
 {
     public Task<List<FeedNavigation>> GetAllFeeds(CancellationToken cancellationToken);
     public Task<OneOf<Guid, List<ValidationFailure>>> InsertFeed(FeedNavigation newFeedNavigation, CancellationToken cancellationToken);

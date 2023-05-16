@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.EntityFrameworkCore;
 using RssFeeder.Server.Infrastructure.Database;
 using RssFeeder.Server.Infrastructure.Model;
@@ -41,7 +42,7 @@ public class SQLiteRepository<TEntity> : ISQLiteRepository<TEntity> where TEntit
 
     public async Task<Guid> InsertAsync(TEntity obj, CancellationToken cancellationToken)
     {
-        await _entitySet.AddAsync(obj, cancellationToken);
+        _dataContext.Entry(obj).State = EntityState.Added;
         await _dataContext.SaveChangesAsync(cancellationToken);
 
         return obj.Id;
@@ -49,7 +50,7 @@ public class SQLiteRepository<TEntity> : ISQLiteRepository<TEntity> where TEntit
     
     public async Task UpdateAsync(TEntity obj, CancellationToken cancellationToken)
     {
-        _entitySet.Update(obj);
+        _dataContext.Entry(obj).State = EntityState.Modified;
         await _dataContext.SaveChangesAsync(cancellationToken);
     }
 

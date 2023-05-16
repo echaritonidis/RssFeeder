@@ -12,8 +12,7 @@ namespace RssFeeder.Server.Infrastructure.Services.Implementations;
 
 public class FeedNavigationService : IFeedNavigationService
 {
-    private readonly IFeedRepository _feedRepository;
-    private readonly IFeedGroupRepository _feedGroupRepository;
+    private readonly IFeedNavigationRepository _feedNavigationRepository;
     private readonly ILabelRepository _labelRepository;
     private readonly IExtractContent _extractContent;
     private readonly IHttpClientFactory _httpClientFactory;
@@ -21,16 +20,14 @@ public class FeedNavigationService : IFeedNavigationService
 
     public FeedNavigationService
     (
-        IFeedRepository feedRepository,
-        IFeedGroupRepository feedGroupRepository,
+        IFeedNavigationRepository feedNavigationRepository,
         ILabelRepository labelRepository,
         IExtractContent extractContent,
         IHttpClientFactory httpClientFactory,
         IValidator<FeedNavigation> feedNavigationValidator
     )
     {
-        _feedRepository = feedRepository;
-        _feedGroupRepository = feedGroupRepository;
+        _feedNavigationRepository = feedNavigationRepository;
         _labelRepository = labelRepository;
         _extractContent = extractContent;
         _httpClientFactory = httpClientFactory;
@@ -39,7 +36,7 @@ public class FeedNavigationService : IFeedNavigationService
 
     public async Task<List<FeedNavigation>> GetAllFeeds(CancellationToken cancellationToken)
     {
-        var items = await _feedRepository.GetAllFeeds(cancellationToken);
+        var items = await _feedNavigationRepository.GetAllFeeds(cancellationToken);
 
         return items.Select(x => new FeedNavigation
         {
@@ -64,7 +61,7 @@ public class FeedNavigationService : IFeedNavigationService
 
         if (!validationResult.IsValid) return validationResult.Errors;
 
-        return await _feedGroupRepository.InsertFeed(new FeedDto
+        return await _feedNavigationRepository.InsertFeed(new FeedDto
         {
             Id = newFeedNavigation.Id,
             Href = newFeedNavigation.Href,
@@ -89,7 +86,7 @@ public class FeedNavigationService : IFeedNavigationService
         
         await _labelRepository.RemoveLabelsByFeedId(feedNavigation.Id, labelIdsToExclude, cancellationToken);
         
-        await _feedRepository.UpdateFeed(new FeedDto
+        await _feedNavigationRepository.UpdateFeed(new FeedDto
         {
             Id = feedNavigation.Id,
             Href = feedNavigation.Href,
@@ -111,14 +108,14 @@ public class FeedNavigationService : IFeedNavigationService
     {
         if (ids is null || ids.Count == 0) return new ValidationFailure("Ids", "Please provide Id's to reset.");
 
-        return await _feedRepository.ResetFeedDefault(ids, cancellationToken);
+        return await _feedNavigationRepository.ResetFeedDefault(ids, cancellationToken);
     }
 
     public async Task<OneOf<bool, Exception>> DeleteFeed(Guid feedId, CancellationToken cancellationToken)
     {
         try
         {
-            return await _feedRepository.DeleteFeed(feedId, cancellationToken);
+            return await _feedNavigationRepository.DeleteFeed(feedId, cancellationToken);
         }
         catch (Exception ex)
         {

@@ -10,22 +10,22 @@ namespace RssFeeder.Server.Infrastructure.Services.Implementations;
 
 public class FeedNavigationGroupService : IFeedNavigationGroupService
 {
-    private readonly IFeedGroupRepository _feedGroupRepository;
+    private readonly IFeedNavigationGroupRepository _feedNavigationGroupRepository;
     private readonly IValidator<FeedNavigationGroup> _feedNavigationGroupValidator;
 
     public FeedNavigationGroupService
     (
-        IFeedGroupRepository feedGroupRepository,
+        IFeedNavigationGroupRepository feedNavigationGroupRepository,
         IValidator<FeedNavigationGroup> feedNavigationGroupValidator
     )
     {
-        _feedGroupRepository = feedGroupRepository;
+        _feedNavigationGroupRepository = feedNavigationGroupRepository;
         _feedNavigationGroupValidator = feedNavigationGroupValidator;
     }
 
     public async Task<List<FeedNavigationGroup>> GetGroupedFeeds(CancellationToken cancellationToken)
     {
-        var items = await _feedGroupRepository.GetGroupFeeds(cancellationToken);
+        var items = await _feedNavigationGroupRepository.GetGroupFeeds(cancellationToken);
 
         return items.Select(x => new FeedNavigationGroup
         {
@@ -58,7 +58,7 @@ public class FeedNavigationGroupService : IFeedNavigationGroupService
 
         if (!validationResult.IsValid) return validationResult.Errors;
 
-        return await _feedGroupRepository.InsertFeedGroup(new FeedGroupDto
+        return await _feedNavigationGroupRepository.InsertFeedGroup(new FeedGroupDto
         {
             Id = newFeedGroup.Id,
             Title = newFeedGroup.Title,
@@ -74,7 +74,7 @@ public class FeedNavigationGroupService : IFeedNavigationGroupService
 
         if (!validationResult.IsValid) return validationResult.Errors;
         
-        await _feedGroupRepository.UpdateFeedGroup(new FeedGroupDto
+        await _feedNavigationGroupRepository.UpdateFeedGroup(new FeedGroupDto
         {
             Id = feedGroup.Id,
             Title = feedGroup.Title,
@@ -90,7 +90,7 @@ public class FeedNavigationGroupService : IFeedNavigationGroupService
     {
         try
         {
-            return await _feedGroupRepository.DeleteFeedGroup(feedGroupId, cancellationToken);
+            return await _feedNavigationGroupRepository.DeleteFeedGroup(feedGroupId, cancellationToken);
         }
         catch (Exception ex)
         {

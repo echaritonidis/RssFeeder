@@ -13,23 +13,23 @@ namespace RssFeeder.Server.Controllers.v1;
 public class FeedNavigationController : ControllerBase
 {
     private readonly ILogger<FeedNavigationController> _logger;
-    private readonly IFeedService _feedService;
+    private readonly IFeedNavigationService _feedNavigationService;
     
     public FeedNavigationController
     (
         ILogger<FeedNavigationController> logger,
-        IFeedService feedService
+        IFeedNavigationService feedNavigationService
     )
     {
         _logger = logger;
-        _feedService = feedService;
+        _feedNavigationService = feedNavigationService;
     }
     
     [OutputCache(Duration = 3600)]
     [HttpGet("GetFeeds")]
     public async Task<IActionResult> GetFeeds(CancellationToken cancellationToken = default)
     {
-        var items = await _feedService.GetAllFeeds(cancellationToken);
+        var items = await _feedNavigationService.GetAllFeeds(cancellationToken);
 
         _logger.LogGetAll(items.Count);
 
@@ -40,7 +40,7 @@ public class FeedNavigationController : ControllerBase
     [HttpGet("GetContent")]
     public async Task<IActionResult> GetContent(string href, CancellationToken cancellationToken = default)
     {
-        var oneXmlContentOf = await _feedService.GetXmlContent(href, cancellationToken);
+        var oneXmlContentOf = await _feedNavigationService.GetXmlContent(href, cancellationToken);
 
         return oneXmlContentOf.Match<IActionResult>
         (
@@ -70,7 +70,7 @@ public class FeedNavigationController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(FeedNavigation newFeedNavigation, CancellationToken cancellationToken = default)
     {
-        var oneInsertedOf = await _feedService.InsertFeed(newFeedNavigation, cancellationToken);
+        var oneInsertedOf = await _feedNavigationService.InsertFeed(newFeedNavigation, cancellationToken);
 
         return oneInsertedOf.Match<IActionResult>
         (
@@ -90,7 +90,7 @@ public class FeedNavigationController : ControllerBase
     [HttpPut("Update")]
     public async Task<IActionResult> Update(FeedNavigation feedNavigation, CancellationToken cancellationToken = default)
     {
-        var oneUpdatedOf = await _feedService.UpdateFeed(feedNavigation, cancellationToken);
+        var oneUpdatedOf = await _feedNavigationService.UpdateFeed(feedNavigation, cancellationToken);
 
         return oneUpdatedOf.Match<IActionResult>
         (
@@ -110,7 +110,7 @@ public class FeedNavigationController : ControllerBase
     [HttpPut("ResetDefault")]
     public async Task<IActionResult> ResetDefault(List<Guid> ids, CancellationToken cancellationToken = default)
     {
-        var oneUpdatedOf = await _feedService.ResetDefault(ids, cancellationToken);
+        var oneUpdatedOf = await _feedNavigationService.ResetDefault(ids, cancellationToken);
 
         return oneUpdatedOf.Match<IActionResult>
         (
@@ -131,7 +131,7 @@ public class FeedNavigationController : ControllerBase
     [HttpDelete("Delete")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
     {
-        var oneDeleteOf = await _feedService.DeleteFeed(id, cancellationToken);
+        var oneDeleteOf = await _feedNavigationService.DeleteFeed(id, cancellationToken);
 
         return oneDeleteOf.Match<IActionResult>
         (

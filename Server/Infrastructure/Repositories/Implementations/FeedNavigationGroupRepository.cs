@@ -54,37 +54,7 @@ public class FeedNavigationGroupRepository : IFeedNavigationGroupRepository
             
         return await _repository.InsertAsync(model, cancellationToken);
     }
-    
-    public async Task<Guid> InsertFeed(FeedDto feed, CancellationToken cancellationToken)
-    {
-        var feedGroup = await _repository.GetByIdWithRelatedDataAsync(Guid.Parse("1D4C2355-4A83-425D-8B2E-323466D4E913"), noTracking: false, cancellationToken, o => o.Feeds);
-        
-        if (feedGroup is null) return Guid.Empty;
-        
-        var newFeed = new Feed
-        {
-            Id = Guid.NewGuid(),
-            CreatedAt = DateTime.UtcNow,
-            ModifiedAt = DateTime.UtcNow,
-            Title = feed.Title,
-            Href = feed.Href,
-            Default = feed.Default,
-            Favorite = feed.Favorite,
-            Labels = feed.Labels?.Select(label => new Label
-            {
-                Id = Guid.NewGuid(),
-                Name = label.Name,
-                Color = label.Color
-            }).ToList() ?? new()
-        };
-
-        feedGroup.Feeds.Add(newFeed);
-        
-        await _repository.Commit(cancellationToken);
-
-        return newFeed.Id;
-    }
-
+   
     public async Task UpdateFeedGroup(FeedGroupDto feedGroup, CancellationToken cancellationToken)
     {
         var item = await _repository.GetByIdWithRelatedDataAsync(feedGroup.Id, noTracking: true, cancellationToken, o => o.Feeds);
