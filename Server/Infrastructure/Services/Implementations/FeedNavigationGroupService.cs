@@ -8,12 +8,12 @@ using RssFeeder.Shared.Model;
 
 namespace RssFeeder.Server.Infrastructure.Services.Implementations;
 
-public class FeedGroupService : IFeedGroupService
+public class FeedNavigationGroupService : IFeedNavigationGroupService
 {
     private readonly IFeedGroupRepository _feedGroupRepository;
     private readonly IValidator<FeedNavigationGroup> _feedNavigationGroupValidator;
 
-    public FeedGroupService
+    public FeedNavigationGroupService
     (
         IFeedGroupRepository feedGroupRepository,
         IValidator<FeedNavigationGroup> feedNavigationGroupValidator

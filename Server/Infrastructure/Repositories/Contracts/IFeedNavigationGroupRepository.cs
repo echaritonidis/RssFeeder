@@ -2,7 +2,7 @@ using RssFeeder.Server.Infrastructure.Dto;
 
 namespace RssFeeder.Server.Infrastructure.Repositories.Contracts;
 
-public interface IFeedGroupRepository
+public interface IFeedNavigationGroupRepository
 {
     public Task<List<FeedGroupDto>> GetGroupFeeds(CancellationToken cancellationToken);
     public Task<Guid> InsertFeedGroup(FeedGroupDto feedGroup, CancellationToken cancellationToken);

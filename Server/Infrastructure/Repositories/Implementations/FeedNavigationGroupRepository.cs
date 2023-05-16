@@ -4,11 +4,11 @@ using RssFeeder.Server.Infrastructure.Repositories.Contracts;
 
 namespace RssFeeder.Server.Infrastructure.Repositories.Implementations;
 
-public class FeedGroupRepository : IFeedGroupRepository
+public class FeedNavigationGroupRepository : IFeedNavigationGroupRepository
 {
     private readonly ISQLiteRepository<FeedGroup> _repository;
 
-    public FeedGroupRepository(ISQLiteRepository<FeedGroup> repository)
+    public FeedNavigationGroupRepository(ISQLiteRepository<FeedGroup> repository)
     {
         _repository = repository;
     }
