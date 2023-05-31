@@ -63,6 +63,7 @@ public class FeedNavigationService : IFeedNavigationService
 
         return await _feedNavigationRepository.InsertFeed(new FeedDto
         {
+            GroupId = newFeedNavigation.GroupId,
             Id = newFeedNavigation.Id,
             Href = newFeedNavigation.Href,
             Title = newFeedNavigation.Title,

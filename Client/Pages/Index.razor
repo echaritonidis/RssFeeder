@@ -3,6 +3,7 @@
 <PageTitle>Rss Feeder</PageTitle>
 
 <div class="left-panel">
+    
     @if (FeedNavigationGroups != null)
     {
         <FeedNavGroupView Model="@FeedNavigationGroups"
@@ -19,7 +20,7 @@
             <SpinKit Centered="true" Type="SpinKitType.Bounce" />
         </div>
     }
-    else
+    else if (FeedContents != null)
     {
         <FeedContentView Model="@FeedContents" />
     }

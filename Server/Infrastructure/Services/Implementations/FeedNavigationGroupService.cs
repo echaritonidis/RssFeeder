@@ -22,6 +22,18 @@ public class FeedNavigationGroupService : IFeedNavigationGroupService
         _feedNavigationGroupRepository = feedNavigationGroupRepository;
         _feedNavigationGroupValidator = feedNavigationGroupValidator;
     }
+    
+    public async Task<List<FeedNavigationGroupNames>> GetGroupedNames(CancellationToken cancellationToken)
+    {
+        var items = await _feedNavigationGroupRepository.GetGroupNames(cancellationToken);
+
+        return items.Select(x => new FeedNavigationGroupNames
+        {
+            Id = x.Id,
+            Title = x.Title,
+            Initial = x.Initial
+        }).ToList();
+    }
 
     public async Task<List<FeedNavigationGroup>> GetGroupedFeeds(CancellationToken cancellationToken)
     {
@@ -34,6 +46,7 @@ public class FeedNavigationGroupService : IFeedNavigationGroupService
             Description = x.Description,
             Color = x.Color,
             Order = x.Order,
+            Initial = x.Initial,
             FeedNavigations = x.Feeds.Select(f => new FeedNavigation
             {
                 Id = f.Id,

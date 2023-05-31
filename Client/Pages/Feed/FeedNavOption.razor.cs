@@ -2,22 +2,11 @@ using Blazorise;
 using Microsoft.AspNetCore.Components;
 using RssFeeder.Shared.Model;
 
-namespace RssFeeder.Client.Shared.Feed;
+namespace RssFeeder.Client.Pages.Feed;
 
 public partial class FeedNavOption
 {
-    private FeedNavigation? _feedItemValue;
-
-    [Parameter]
-    public FeedNavigation? FeedItem
-    {
-        get => _feedItemValue;
-        set
-        {
-            if (_feedItemValue == value) return;
-            _feedItemValue = value;
-        }
-    }
+    [Parameter] public FeedNavigation? FeedItem { get; set; }
 
     [Parameter] public EventCallback<FeedNavigation> FeedItemChanged { get; set; }
     [Parameter] public EventCallback<FeedNavigation> OnFavoriteChangeCallback { get; set; }
@@ -25,7 +14,7 @@ public partial class FeedNavOption
     [Parameter] public EventCallback<FeedNavigation> OnEditCallback { get; set; }
     [Parameter] public EventCallback<FeedNavigation> OnDeleteCallback { get; set; }
     
-    private Dropdown moreOptionsRef;
+    private Dropdown moreOptionsRef = default!;
 
     public Dropdown GetRef() => moreOptionsRef;
 }

@@ -12,6 +12,18 @@ public class FeedNavigationGroupRepository : IFeedNavigationGroupRepository
     {
         _repository = repository;
     }
+    
+    public async Task<List<FeedGroupDto>> GetGroupNames(CancellationToken cancellationToken)
+    {
+        var items = await _repository.GetAllWithRelatedDataAsync(noTracking: true, cancellationToken);
+
+        return items.Select(g => new FeedGroupDto
+        {
+            Id = g.Id,
+            Title = g.Title,
+            Initial = g.Initial
+        }).ToList();
+    }
 
     public async Task<List<FeedGroupDto>> GetGroupFeeds(CancellationToken cancellationToken)
     {
@@ -24,6 +36,7 @@ public class FeedNavigationGroupRepository : IFeedNavigationGroupRepository
             Description = g.Description,
             Color = g.Color,
             Order = g.Order,
+            Initial = g.Initial,
             Feeds = g.Feeds.Select(x => new FeedDto
             {
                 Id = x.Id,
@@ -49,6 +62,7 @@ public class FeedNavigationGroupRepository : IFeedNavigationGroupRepository
             Title = feedGroup.Title,
             Description = feedGroup.Description,
             Order = feedGroup.Order,
+            Initial = false,
             Color = feedGroup.Color
         };
             
@@ -66,7 +80,8 @@ public class FeedNavigationGroupRepository : IFeedNavigationGroupRepository
             Title = feedGroup.Title,
             Description = feedGroup.Description,
             Color = feedGroup.Color,
-            Order = feedGroup.Order
+            Order = feedGroup.Order,
+            Initial = feedGroup.Initial
         };
             
         await _repository.UpdateAsync(item, cancellationToken);

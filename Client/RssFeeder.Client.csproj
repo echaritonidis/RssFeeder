@@ -27,4 +27,24 @@
   <ItemGroup>
     <Folder Include="Events\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Shared\Feed\AddFeedNavigationGroupModalView.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Feed\AddFeedNavigationModalView.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Feed\EditFeedModalView.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Feed\FeedContentView.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Feed\FeedNavGroupView.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Feed\FeedNavOption.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Feed\FeedNavView.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Pages\Feed\AddFeedNavigationGroupModalView.razor" />
+    <AdditionalFiles Include="Pages\Feed\AddFeedNavigationModalView.razor" />
+    <AdditionalFiles Include="Pages\Feed\EditFeedModalView.razor" />
+    <AdditionalFiles Include="Pages\Feed\FeedContentView.razor" />
+    <AdditionalFiles Include="Pages\Feed\FeedNavGroupView.razor" />
+    <AdditionalFiles Include="Pages\Feed\FeedNavOption.razor" />
+    <AdditionalFiles Include="Pages\Feed\FeedNavView.razor" />
+  </ItemGroup>
 </Project>

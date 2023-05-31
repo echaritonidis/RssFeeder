@@ -24,7 +24,17 @@ public class DataContext : DbContext
             .OnDelete(DeleteBehavior.Cascade);
         
         // Add default group
-        modelBuilder.Entity<FeedGroup>().HasData(new FeedGroup { Id = Guid.NewGuid(), Color = "#000", Title = "Unclassified", Description = "Generic specific category or topic" });
+        modelBuilder.Entity<FeedGroup>().HasData
+        (
+            new FeedGroup
+            {
+                Id = Guid.NewGuid(), 
+                Initial = true,
+                Color = "#000", 
+                Title = "Unclassified", 
+                Description = "Generic specific category or topic"
+            }
+        );
     }
 
     public DbSet<FeedGroup> FeedGroup { get; set; }

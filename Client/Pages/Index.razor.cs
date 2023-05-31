@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using RssFeeder.Client.Events;
 using RssFeeder.Shared.Model;
 using System.Net.Http.Json;
-using RssFeeder.Client.Shared;
-using RssFeeder.Client.Shared.Feed;
+using RssFeeder.Client.Events;
 
 namespace RssFeeder.Client.Pages;
 
@@ -13,24 +11,21 @@ public partial class Index : IDisposable
     [Inject] public IJSRuntime _jsRuntime { get; set; } = default!;
     [Inject] public HttpClient _httpClient { get; set; } = default!;
     [Inject] public NotifyEventService _notifyEventService { get; set; } = default!;
-    public List<FeedNavigationGroup> FeedNavigationGroups { get; set; } = default!;
-    public List<FeedContent> FeedContents { get; set; } = default!;
+    public List<FeedNavigationGroup>? FeedNavigationGroups { get; set; }
+    public List<FeedContent>? FeedContents { get; set; }
     protected bool ContentLoading { get; set; }
     
     public void Dispose()
     {
-        this._notifyEventService.EventClick -= this.InvalidateFeed;
+        _notifyEventService.InvalidateFeedNavigationGroupClick -= this.InvalidateFeedNavigationGroup;
+        _notifyEventService.InvalidateFeedNavigationClick -= this.InvalidateFeedNavigation;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        _notifyEventService.EventClick += this.InvalidateFeed;
-
-        await LoadData();
-    }
-
-    protected async Task LoadData()
-    {
+        _notifyEventService.InvalidateFeedNavigationGroupClick += this.InvalidateFeedNavigationGroup;
+        _notifyEventService.InvalidateFeedNavigationClick += this.InvalidateFeedNavigation;
+        
         var response = await _httpClient.GetAsync("/api/v1.0/FeedNavigationGroup/GetFeedGroups");
 
         if (response.IsSuccessStatusCode)
@@ -38,22 +33,36 @@ public partial class Index : IDisposable
             FeedNavigationGroups = await response.Content.ReadFromJsonAsync<List<FeedNavigationGroup>>();
         }
     }
-
-    protected void InvalidateFeed(object? sender, EventArgs e)
+    
+    private void InvalidateFeedNavigationGroup(object? sender, EventArgs e)
     {
+        FeedNavigationGroups ??= new();
         FeedNavigationGroups.Add((FeedNavigationGroup)sender!);
+        
+        this.InvokeAsync(StateHasChanged);
+    }
+
+    private void InvalidateFeedNavigation(object? sender, EventArgs e)
+    {
+        var feedNavigationGroup = FeedNavigationGroups?.Where(g => g.Initial).FirstOrDefault();
+        
+        if (feedNavigationGroup is null) return;
+        
+        feedNavigationGroup.FeedNavigations ??= new();
+        feedNavigationGroup.FeedNavigations.Add((FeedNavigation)sender!);
+        
         this.InvokeAsync(StateHasChanged);
     }
     
-    protected async Task ExportExcel()
-    {
-        var result = await _httpClient.PostAsJsonAsync("/api/v1.0/FeedNavigation/ExportExcel", FeedContents);
-
-        if (result.IsSuccessStatusCode)
-        {
-            var content = await result.Content.ReadAsStringAsync();
-
-            await _jsRuntime.InvokeAsync<object>("saveFile", "file.xlsx", content);
-        }
-    }
+    // protected async Task ExportExcel()
+    // {
+    //     var result = await _httpClient.PostAsJsonAsync("/api/v1.0/FeedNavigation/ExportExcel", FeedContents);
+    //
+    //     if (result.IsSuccessStatusCode)
+    //     {
+    //         var content = await result.Content.ReadAsStringAsync();
+    //
+    //         await _jsRuntime.InvokeAsync<object>("saveFile", "file.xlsx", content);
+    //     }
+    // }
 }

@@ -1,0 +1,30 @@
+﻿@if (Model != null)
+{
+    <ol>
+        @foreach (var feedItem in Model)
+        {
+            <li class="feed-nav" @onclick="(async (_) => await OnFeedNavClickAsync(feedItem))">
+                <div class="feed-item @(feedItem.Active ? "feed-item-active" : null)">
+                    <p>@feedItem.Title</p>
+                    <Icon Class="nav-icon" Name="IconName.MoreVertical" Float="Float.End" @onclick:stopPropagation="true" Clicked="((e) => OnMoreCallback(e, feedItem))" />
+                </div>
+                @if (feedItem.FeedLabels != null)
+                {
+                    <div class="feed-labels">
+                        @foreach (var label in feedItem.FeedLabels)
+                        {
+                            if (string.IsNullOrEmpty(label.Color))
+                            {
+                                <span>@label.Name</span>
+                            }
+                            else
+                            {
+                                <span style="color:@label.Color;">@label.Name</span>
+                            }
+                        }
+                    </div>
+                }
+            </li>
+        }
+    </ol>
+}

@@ -4,22 +4,23 @@ using Microsoft.AspNetCore.Components.Web;
 using RssFeeder.Shared.Extensions;
 using RssFeeder.Shared.Model;
 
-namespace RssFeeder.Client.Shared.Feed;
+namespace RssFeeder.Client.Pages.Feed;
 
-public partial class EditFeedModalView
+public partial class AddFeedNavigationModalView
 {
-    private Func<FeedNavigation, Task> OnSuccessResponse;
-    
-    private FeedNavigation feedNavigationToEdit;
+    [Parameter] public List<FeedNavigationGroupNames>? GroupNames { get; set; }
+    [Parameter] public Func<FeedNavigation, Task>? OnSuccessResponse { get; set; }
+
+    private FeedNavigation feedNavigation;
     private Modal modalRef;
     private Validations validations;
     private string labelName;
+    private FeedNavigationGroupNames? selectedFeedNavigationGroup;
 
-    public Task ShowModal(FeedNavigation feedNavigation, Func<FeedNavigation, Task> successCallback)
+    public Task ShowModal()
     {
-        feedNavigationToEdit = feedNavigation;
-        OnSuccessResponse = successCallback;
-        
+        feedNavigation = new();
+        selectedFeedNavigationGroup = GroupNames?.FirstOrDefault(g => g.Initial);
         labelName = string.Empty;
         validations.ClearAll();
 
@@ -31,21 +32,27 @@ public partial class EditFeedModalView
         return modalRef.Hide();
     }
 
+    private void OnGroupClicked(FeedNavigationGroupNames fng)
+    {
+        selectedFeedNavigationGroup = fng;
+        feedNavigation.GroupId = fng.Id;
+    }
+
     private async Task OnSaveFeed()
     {
         if (await validations.ValidateAll())
         {
-            await HideModal();
+            if (OnSuccessResponse is not null) await OnSuccessResponse(feedNavigation);
 
-            await OnSuccessResponse(feedNavigationToEdit);
+            await HideModal();
         }
     }
 
     private void OnAddNewLabel()
     {
-        if (feedNavigationToEdit.FeedLabels == null) feedNavigationToEdit.FeedLabels = new();
+        if (feedNavigation.FeedLabels == null) feedNavigation.FeedLabels = new();
 
-        feedNavigationToEdit.FeedLabels.Add(new FeedLabel
+        feedNavigation.FeedLabels.Add(new FeedLabel
         {
             Name = labelName
         });
@@ -55,7 +62,7 @@ public partial class EditFeedModalView
 
     private void OnBadgeClose(FeedLabel label)
     {
-        feedNavigationToEdit.FeedLabels?.Remove(label);
+        feedNavigation.FeedLabels?.Remove(label);
     }
 
     private void OnKeyPressInLabel(KeyboardEventArgs eventArgs)

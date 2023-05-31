@@ -28,6 +28,8 @@
 }
 
     /* Left content */
+    #main .left-panel ul, #main .left-panel ol { list-style-type: none; }
+    #main .left-panel ul { padding: 0; }
     #main .left-panel {
         width: 240px;
         height: 600px;
