@@ -6,9 +6,9 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
 {
 	public class FeedNavigationRepository : IFeedNavigationRepository
 	{
-        private readonly ISQLiteRepository<Feed> _repository;
+        private readonly ISqLiteRepository<Feed> _repository;
 
-        public FeedNavigationRepository(ISQLiteRepository<Feed> repository)
+        public FeedNavigationRepository(ISqLiteRepository<Feed> repository)
         {
             _repository = repository;
         }
@@ -35,21 +35,17 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
 
         public async Task<Guid> InsertFeed(FeedDto feed, CancellationToken cancellationToken)
         {
+            var newFeedId = Guid.NewGuid();
+            
             var model = new Feed
             {
-                Id = Guid.NewGuid(),
+                Id = newFeedId,
                 CreatedAt = DateTime.UtcNow,
                 ModifiedAt = DateTime.UtcNow,
                 Title = feed.Title,
                 Href = feed.Href,
                 Default = feed.Default,
                 Favorite = feed.Favorite,
-                Labels = feed.Labels?.Select(label => new Label
-                {
-                    Id = Guid.NewGuid(),
-                    Name = label.Name,
-                    Color = label.Color
-                }).ToList() ?? new(),
                 FeedGroupId = feed.GroupId
             };
 
@@ -68,13 +64,7 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
                 Title = feed.Title,
                 Href = feed.Href,
                 Default = feed.Default,
-                Favorite = feed.Favorite,
-                Labels = feed.Labels.Select(label => new Label
-                {
-                    Id = label.Id,
-                    Name = label.Name,
-                    Color = label.Color
-                }).ToList()
+                Favorite = feed.Favorite
             };
             
             await _repository.UpdateAsync(item, cancellationToken);

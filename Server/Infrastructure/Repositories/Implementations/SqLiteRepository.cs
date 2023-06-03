@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.InkML;
 using Microsoft.EntityFrameworkCore;
 using RssFeeder.Server.Infrastructure.Database;
 using RssFeeder.Server.Infrastructure.Model;
@@ -7,12 +6,12 @@ using System.Linq.Expressions;
 
 namespace RssFeeder.Server.Infrastructure.Repositories.Implementations;
 
-public class SQLiteRepository<TEntity> : ISQLiteRepository<TEntity> where TEntity : BaseEntity
+public class SqLiteRepository<TEntity> : ISqLiteRepository<TEntity> where TEntity : BaseEntity
 {
     private readonly DataContext _dataContext;
     private readonly DbSet<TEntity> _entitySet;
 
-    public SQLiteRepository(DataContext dataContext)
+    public SqLiteRepository(DataContext dataContext)
     {
         _dataContext = dataContext;
         _entitySet = dataContext.Set<TEntity>();
@@ -47,7 +46,16 @@ public class SQLiteRepository<TEntity> : ISQLiteRepository<TEntity> where TEntit
 
         return obj.Id;
     }
-    
+
+    public async Task<bool> InsertManyAsync(List<TEntity> objs, CancellationToken cancellationToken)
+    {
+        objs.ForEach(obj => _dataContext.Entry(obj).State = EntityState.Added);
+
+        await _dataContext.SaveChangesAsync(cancellationToken);
+
+        return true;
+    }
+
     public async Task UpdateAsync(TEntity obj, CancellationToken cancellationToken)
     {
         _dataContext.Entry(obj).State = EntityState.Modified;
@@ -63,58 +71,62 @@ public class SQLiteRepository<TEntity> : ISQLiteRepository<TEntity> where TEntit
     public async Task<bool> DeleteById(Guid entityId, CancellationToken cancellationToken)
     {
         var entityToDelete = await _entitySet.FindAsync(new object[] { entityId }, cancellationToken);
+        
+        if (entityToDelete == null) return false;
+        
+        _entitySet.Remove(entityToDelete);
+        await _dataContext.SaveChangesAsync(cancellationToken);
 
-        if (entityToDelete != null)
-        {
-            _entitySet.Remove(entityToDelete);
-            await _dataContext.SaveChangesAsync(cancellationToken);
-
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     public async Task<bool> DeleteByIds(List<Guid> entityIds, CancellationToken cancellationToken)
     {
         var entitiesToDelete = await _entitySet.Where(x => entityIds.Contains(x.Id)).ToListAsync(cancellationToken);
+        
+        if (!(entitiesToDelete?.Count > 0)) return false;
+        
+        _entitySet.RemoveRange(entitiesToDelete);
+        await _dataContext.SaveChangesAsync(cancellationToken);
 
-        if (entitiesToDelete?.Count > 0)
-        {
-            _entitySet.RemoveRange(entitiesToDelete);
-            await _dataContext.SaveChangesAsync(cancellationToken);
-
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
-    public async Task<List<TEntity>> GetAllWithRelatedDataAsync(bool noTracking, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includeProperties)
+    public async Task<List<TEntity>> GetAllWithRelatedDataAsync<TIncluded>
+    (
+        bool noTracking,
+        CancellationToken cancellationToken, 
+        Expression<Func<TEntity, IEnumerable<TIncluded>>> includeProperty,
+        Expression<Func<TIncluded, object>> thenIncludeProperty
+    )
+    {
+        var query = this.GetQueryable(noTracking);
+
+        return await query
+            .Include(includeProperty)
+            .ThenInclude(thenIncludeProperty)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<TEntity>> GetAllWithRelatedDataAsync(bool noTracking, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[]? includeProperties)
     {
         var query = this.GetQueryable(noTracking);
 
         if (includeProperties != null)
         {
-            foreach (var includeProperty in includeProperties)
-            {
-                query = query.Include(includeProperty);
-            }
+            query = includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
         }
 
         return await query.ToListAsync(cancellationToken);
     }
 
-    public async Task<TEntity?> GetByIdWithRelatedDataAsync(Guid entityId, bool noTracking, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includeProperties)
+    public async Task<TEntity?> GetByIdWithRelatedDataAsync(Guid entityId, bool noTracking, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[]? includeProperties)
     {
         var query = this.GetQueryable(noTracking).Where(x => x.Id == entityId);
 
         if (includeProperties != null)
         {
-            foreach (var includeProperty in includeProperties)
-            {
-                query = query.Include(includeProperty);
-            }
+            query = includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
         }
 
         return await query.SingleOrDefaultAsync(cancellationToken);

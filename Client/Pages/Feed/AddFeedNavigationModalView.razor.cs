@@ -50,8 +50,7 @@ public partial class AddFeedNavigationModalView
 
     private void OnAddNewLabel()
     {
-        if (feedNavigation.FeedLabels == null) feedNavigation.FeedLabels = new();
-
+        feedNavigation.FeedLabels ??= new();
         feedNavigation.FeedLabels.Add(new FeedLabel
         {
             Name = labelName

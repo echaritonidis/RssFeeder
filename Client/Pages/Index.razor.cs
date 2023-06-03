@@ -44,12 +44,13 @@ public partial class Index : IDisposable
 
     private void InvalidateFeedNavigation(object? sender, EventArgs e)
     {
-        var feedNavigationGroup = FeedNavigationGroups?.Where(g => g.Initial).FirstOrDefault();
+        var newFeedNavigation = (FeedNavigation)sender!;
+        var feedNavigationGroup = FeedNavigationGroups?.Where(g => g.Id == newFeedNavigation.GroupId).FirstOrDefault();
         
         if (feedNavigationGroup is null) return;
         
         feedNavigationGroup.FeedNavigations ??= new();
-        feedNavigationGroup.FeedNavigations.Add((FeedNavigation)sender!);
+        feedNavigationGroup.FeedNavigations.Add(newFeedNavigation);
         
         this.InvokeAsync(StateHasChanged);
     }

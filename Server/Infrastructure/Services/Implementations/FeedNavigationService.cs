@@ -61,20 +61,27 @@ public class FeedNavigationService : IFeedNavigationService
 
         if (!validationResult.IsValid) return validationResult.Errors;
 
-        return await _feedNavigationRepository.InsertFeed(new FeedDto
+        var feedId = await _feedNavigationRepository.InsertFeed(new FeedDto
         {
             GroupId = newFeedNavigation.GroupId,
-            Id = newFeedNavigation.Id,
             Href = newFeedNavigation.Href,
             Title = newFeedNavigation.Title,
-            Labels = newFeedNavigation.FeedLabels?.Select(label => new LabelDto
-            {
-                Name = label.Name,
-                Color = label.Color
-            }).ToList() ?? new(),
             Favorite = newFeedNavigation.Favorite,
             Default = newFeedNavigation.Default
         }, cancellationToken);
+
+        if (newFeedNavigation.FeedLabels?.Count > 0)
+        {
+            var labels = newFeedNavigation.FeedLabels.Select(label => new LabelDto
+            {
+                Name = label.Name,
+                Color = label.Color,
+            }).ToList();
+
+            await _labelRepository.InsertLabelsAsync(feedId, labels, cancellationToken);
+        }
+
+        return feedId;
     }
 
     public async Task<OneOf<Guid, List<ValidationFailure>>> UpdateFeed(FeedNavigation feedNavigation, CancellationToken cancellationToken)
@@ -92,16 +99,22 @@ public class FeedNavigationService : IFeedNavigationService
             Id = feedNavigation.Id,
             Href = feedNavigation.Href,
             Title = feedNavigation.Title,
-            Labels = feedNavigation.FeedLabels?.Select(label => new LabelDto
-            {
-                Id = label.Id,
-                Name = label.Name,
-                Color = label.Color
-            }).ToList() ?? new(),
             Favorite = feedNavigation.Favorite,
-            Default = feedNavigation.Default
+            Default = feedNavigation.Default,
+            ModifiedAt = DateTime.UtcNow
         }, cancellationToken);
+        
+        if (feedNavigation.FeedLabels?.Count > 0)
+        {
+            var labels = feedNavigation.FeedLabels.Select(label => new LabelDto
+            {
+                Name = label.Name,
+                Color = label.Color,
+            }).ToList();
 
+            await _labelRepository.InsertLabelsAsync(feedNavigation.Id, labels, cancellationToken);
+        }
+        
         return feedNavigation.Id;
     }
 

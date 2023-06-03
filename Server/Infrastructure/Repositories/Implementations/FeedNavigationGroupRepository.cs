@@ -6,9 +6,9 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations;
 
 public class FeedNavigationGroupRepository : IFeedNavigationGroupRepository
 {
-    private readonly ISQLiteRepository<FeedGroup> _repository;
+    private readonly ISqLiteRepository<FeedGroup> _repository;
 
-    public FeedNavigationGroupRepository(ISQLiteRepository<FeedGroup> repository)
+    public FeedNavigationGroupRepository(ISqLiteRepository<FeedGroup> repository)
     {
         _repository = repository;
     }
@@ -27,7 +27,7 @@ public class FeedNavigationGroupRepository : IFeedNavigationGroupRepository
 
     public async Task<List<FeedGroupDto>> GetGroupFeeds(CancellationToken cancellationToken)
     {
-        var items = await _repository.GetAllWithRelatedDataAsync(noTracking: true, cancellationToken, o => o.Feeds);
+        var items = await _repository.GetAllWithRelatedDataAsync<Feed>(noTracking: true, cancellationToken, o => o.Feeds, f => f.Labels);
 
         return items.Select(g => new FeedGroupDto
         {
