@@ -42,17 +42,18 @@ public class FeedNavigationController : ControllerBase
     public async Task<IActionResult> GetContent(string href, CancellationToken cancellationToken = default)
     {
         var oneXmlContentOf = await _feedNavigationService.GetXmlContent(href, cancellationToken);
-
+        var urlEncoded = WebUtility.UrlEncode(href.Replace(Environment.NewLine, ""));
+        
         return oneXmlContentOf.Match<IActionResult>
         (
             content =>
             {
-                _logger.LogContent(WebUtility.UrlEncode(href), content.Count);
+                _logger.LogContent(urlEncoded, content.Count);
                 return Ok(content);
             },
             notFoundContent =>
             {
-                _logger.LogContentDoesntExistError(WebUtility.UrlEncode(href));
+                _logger.LogContentDoesntExistError(urlEncoded);
                 return BadRequest("Content doesn't exist.");
             },
             notSuccessfulRequest =>
@@ -117,7 +118,7 @@ public class FeedNavigationController : ControllerBase
         (
             id =>
             {
-                _logger.LogDefaultReset(string.Join(", ", ids));
+                _logger.LogDefaultReset(string.Join(", ", ids).Replace(Environment.NewLine, ""));
                 return Ok($"Default feed's was successfully reset");
             },
             notValidFeedNavigation =>
