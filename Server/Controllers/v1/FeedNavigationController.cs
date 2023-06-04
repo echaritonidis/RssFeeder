@@ -1,3 +1,4 @@
+using System.Net;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
@@ -46,12 +47,12 @@ public class FeedNavigationController : ControllerBase
         (
             content =>
             {
-                _logger.LogContent(href, content.Count);
+                _logger.LogContent(WebUtility.UrlEncode(href), content.Count);
                 return Ok(content);
             },
             notFoundContent =>
             {
-                _logger.LogContentDoesntExistError(href);
+                _logger.LogContentDoesntExistError(WebUtility.UrlEncode(href));
                 return BadRequest("Content doesn't exist.");
             },
             notSuccessfulRequest =>
@@ -116,7 +117,7 @@ public class FeedNavigationController : ControllerBase
         (
             id =>
             {
-                _logger.LogDefaultReset(ids);
+                _logger.LogDefaultReset(string.Join(", ", ids));
                 return Ok($"Default feed's was successfully reset");
             },
             notValidFeedNavigation =>
