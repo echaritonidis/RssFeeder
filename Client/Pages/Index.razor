@@ -3,12 +3,13 @@
 <PageTitle>Rss Feeder</PageTitle>
 
 <div class="left-panel">
-    <FeedNavView Model="@FeedNavigations"
-                 OnSelectFeedCallback="OnSelectFeed"
-                 OnDefaultChangeCallback="OnDefaultToggle"
-                 OnFavoriteChangeCallback="OnFavoriteToggle"
-                 OnEditCallback="OnShowEditContext"
-                 OnDeleteCallback="OnDeleteNavigation"/>
+    
+    @if (FeedNavigationGroups != null)
+    {
+        <FeedNavGroupView Model="@FeedNavigationGroups"
+                          @bind-ContentLoading="ContentLoading"
+                          @bind-FeedContent="FeedContents"/>
+    }
 </div>
 
 <div class="main-content">
@@ -19,10 +20,8 @@
             <SpinKit Centered="true" Type="SpinKitType.Bounce" />
         </div>
     }
-    else
+    else if (FeedContents != null)
     {
         <FeedContentView Model="@FeedContents" />
     }
 </div>
-
-<EditFeedModalView @ref="editFeedModalViewRef" />

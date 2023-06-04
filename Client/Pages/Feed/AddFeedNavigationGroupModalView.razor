@@ -1,0 +1,41 @@
+﻿<Modal @ref="modalRef">
+
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>New group</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Validations @ref="validations" Mode="ValidationMode.Manual">
+
+                @if (_feedNavigationGroup != null)
+                {
+                    <Field>
+                        <FieldLabel>Title</FieldLabel>
+                        <Validation Validator="ValidationRule.IsNotEmpty">
+                            <TextEdit @bind-Text="_feedNavigationGroup.Title">
+                                <Feedback>
+                                    <ValidationError>Enter valid title!</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </Validation>
+                    </Field>
+                    <Field>
+                        <FieldLabel>Description</FieldLabel>
+                        <TextEdit @bind-Text="_feedNavigationGroup.Description"></TextEdit>
+                    </Field>
+                    <Field>
+                        <FieldLabel>Color</FieldLabel>
+                        <ColorPicker @bind-Color="_feedNavigationGroup.Color"/>
+                    </Field>
+                }
+            </Validations>
+
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@HideModal">Close</Button>
+            <Button Color="Color.Primary" Clicked="@OnSaveFeed">Save</Button>
+        </ModalFooter>
+    </ModalContent>
+
+</Modal>

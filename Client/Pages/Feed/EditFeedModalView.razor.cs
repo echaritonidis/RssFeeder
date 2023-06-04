@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components.Web;
 using RssFeeder.Shared.Extensions;
 using RssFeeder.Shared.Model;
 
-namespace RssFeeder.Client.Shared.Feed;
+namespace RssFeeder.Client.Pages.Feed;
 
 public partial class EditFeedModalView
 {

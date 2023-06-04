@@ -28,6 +28,8 @@
 }
 
     /* Left content */
+    #main .left-panel ul, #main .left-panel ol { list-style-type: none; }
+    #main .left-panel ul { padding: 0; }
     #main .left-panel {
         width: 240px;
         height: 600px;
@@ -44,6 +46,8 @@
                 align-items: center;
                 cursor: pointer;
             }
+                #main .left-panel .feed-nav .feed-item .fa-ellipsis-v { display: none; }
+                #main .left-panel .feed-nav .feed-item:hover .fa-ellipsis-v { display: block }
                 #main .left-panel .feed-nav .feed-item p { margin: 0; }
                 #main .left-panel .feed-nav .feed-item:hover p,
                 #main .left-panel .feed-nav .feed-item-active p {
@@ -119,7 +123,11 @@
         #main .main-content .desc {
             font-size: 0.95rem;
             margin: 0;
+            overflow: hidden;
         }
+            #main .main-content .desc img {
+                max-width: 100%;
+            }
 
 /* AddFeedModal */
 #feed-labels {

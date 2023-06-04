@@ -29,10 +29,13 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddTransient(typeof(ISQLiteRepository<>), typeof(SQLiteRepository<>));
+builder.Services.AddTransient(typeof(ISqLiteRepository<>), typeof(SqLiteRepository<>));
 builder.Services.AddTransient<ILabelRepository, LabelRepository>();
-builder.Services.AddTransient<IFeedRepository, FeedRepository>();
-builder.Services.AddTransient<IFeedService, FeedService>();
+builder.Services.AddTransient<IFeedNavigationGroupRepository, FeedNavigationGroupRepository>();
+builder.Services.AddTransient<IFeedNavigationRepository, FeedNavigationRepository>();
+
+builder.Services.AddTransient<IFeedNavigationGroupService, FeedNavigationGroupService>();
+builder.Services.AddTransient<IFeedNavigationService, FeedNavigationService>();
 
 builder.Services.AddTransient<IExtractContent, ExtractContent>();
 builder.Services.AddSingleton<DateRegexUtil>();
@@ -54,6 +57,7 @@ builder.Services.AddApiVersioning(opt =>
 
 // Validators
 builder.Services.AddScoped<IValidator<FeedNavigation>, FeedNavigationValidator>();
+builder.Services.AddScoped<IValidator<FeedNavigationGroup>, FeedNavigationGroupValidator>();
 
 // Logging
 builder.Logging.ClearProviders();
