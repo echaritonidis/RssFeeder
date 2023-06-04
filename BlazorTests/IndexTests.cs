@@ -44,17 +44,42 @@ namespace BlazorTests
             using var ctx = new TestContext();
             {
                 var mockHttpHandler = this.Setup(ctx);
-                mockHttpHandler.When("/api/v1.0/Feed/GetAll").RespondJson(new List<FeedNavigation>
+                mockHttpHandler.When("/api/v1.0/FeedNavigationGroup/GetFeedGroups").RespondJson(new List<FeedNavigationGroup>
                 {
                     new()
                     {
-                        Default = false,
-                        Favorite = false,
-                        Href = "http://feeds.foxnews.com/foxnews/scitech",
-                        Title = "Fox News Science"
+                        Id = Guid.NewGuid(),
+                        Title = "Unclassified",
+                        Description = "Lorem ipsum",
+                        Order = 1,
+                        Initial = true,
+                        FeedNavigations = new()
+                        {
+                            new FeedNavigation()
+                            {
+                                Default = false,
+                                Favorite = false,
+                                Href = "http://feeds.foxnews.com/foxnews/scitech",
+                                Title = "Fox News Science",
+                                FeedLabels = new()
+                                {
+                                    new FeedLabel()
+                                    {
+                                        Id = Guid.NewGuid(),
+                                        Name = "news"
+                                    },
+                                    new FeedLabel()
+                                    {
+                                        Id = Guid.NewGuid(),
+                                        Name = "science"
+                                    }
+                                }
+                            }
+                        }
                     }
                 });
-                mockHttpHandler.When("/api/v1.0/Feed/GetContent").RespondJson(new List<FeedContent>
+                
+                mockHttpHandler.When("/api/v1.0/FeedNavigation/GetContent").RespondJson(new List<FeedContent>
                 {
                     new()
                     {
@@ -71,11 +96,16 @@ namespace BlazorTests
                 // Act
 
                 // Wait to load nav
-                component.WaitForState(() => component.FindAll(".feed-nav .feed-item").Count.Equals(1), TimeSpan.FromMinutes(1));
+                // load nav group
+                component.WaitForState(() => component.FindAll(".feed-group .feed-group-item").Count.Equals(1), TimeSpan.FromMinutes(1));
+                // load nav subscriptions
+                component.WaitForState(() => component.FindAll(".feed-group .feed-nav .feed-item").Count.Equals(1), TimeSpan.FromMinutes(1));
+                // load nav subscription labels
+                component.WaitForState(() => component.FindAll(".feed-group .feed-nav .feed-labels span").Count.Equals(2), TimeSpan.FromMinutes(1));
 
-                var feedNavs = component.FindAll(".feed-nav .feed-item", enableAutoRefresh: true);
-                var children = feedNavs[0].Children;
-                var moreIcon = children.Filter(".nav-icon").Single();
+                var feedNavGroups = component.FindAll(".feed-group", enableAutoRefresh: true);
+                var feedNavs = component.FindAll(".feed-nav", enableAutoRefresh: true);
+                var moreIcon = feedNavs.Children(".feed-item").Children(".nav-icon").Single();
 
                 // Click nav to load the content
                 feedNavs[0].Click();
@@ -113,9 +143,9 @@ namespace BlazorTests
                 Assert.NotNull(favoriteIconChecked);
                 Assert.Contains("default-icon-checked", defaultIconChecked.ClassName);
                 Assert.Contains("favorite-icon-checked", favoriteIconChecked.ClassName);
-
-                Assert.True(feedNavs.Count > 0);
                 Assert.True(feedContents.Count > 0);
+                Assert.True(feedNavGroups.Count == 1);
+                Assert.True(feedNavs.Count == 1);
             }
         }
     }
