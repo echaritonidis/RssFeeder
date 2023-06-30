@@ -1,3 +1,4 @@
+using System.Net;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
@@ -10,26 +11,26 @@ namespace RssFeeder.Server.Controllers.v1;
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
-public class FeedController : ControllerBase
+public class FeedNavigationController : ControllerBase
 {
-    private readonly ILogger<FeedController> _logger;
-    private readonly IFeedService _feedService;
-
-    public FeedController
+    private readonly ILogger<FeedNavigationController> _logger;
+    private readonly IFeedNavigationService _feedNavigationService;
+    
+    public FeedNavigationController
     (
-        ILogger<FeedController> logger,
-        IFeedService feedService
+        ILogger<FeedNavigationController> logger,
+        IFeedNavigationService feedNavigationService
     )
     {
         _logger = logger;
-        _feedService = feedService;
+        _feedNavigationService = feedNavigationService;
     }
-
+    
     [OutputCache(Duration = 3600)]
-    [HttpGet("GetAll")]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
+    [HttpGet("GetFeeds")]
+    public async Task<IActionResult> GetFeeds(CancellationToken cancellationToken = default)
     {
-        var items = await _feedService.GetAllFeeds(cancellationToken);
+        var items = await _feedNavigationService.GetAllFeeds(cancellationToken);
 
         _logger.LogGetAll(items.Count);
 
@@ -40,18 +41,19 @@ public class FeedController : ControllerBase
     [HttpGet("GetContent")]
     public async Task<IActionResult> GetContent(string href, CancellationToken cancellationToken = default)
     {
-        var oneXmlContentOf = await _feedService.GetXmlContent(href, cancellationToken);
-
+        var oneXmlContentOf = await _feedNavigationService.GetXmlContent(href, cancellationToken);
+        var urlEncoded = WebUtility.UrlEncode(href.Replace(Environment.NewLine, ""));
+        
         return oneXmlContentOf.Match<IActionResult>
         (
             content =>
             {
-                _logger.LogContent(href, content.Count);
+                _logger.LogContent(urlEncoded, content.Count);
                 return Ok(content);
             },
             notFoundContent =>
             {
-                _logger.LogContentDoesntExistError(href);
+                _logger.LogContentDoesntExistError(urlEncoded);
                 return BadRequest("Content doesn't exist.");
             },
             notSuccessfulRequest =>
@@ -70,14 +72,14 @@ public class FeedController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(FeedNavigation newFeedNavigation, CancellationToken cancellationToken = default)
     {
-        var oneInsertedOf = await _feedService.InsertFeed(newFeedNavigation, cancellationToken);
+        var oneInsertedOf = await _feedNavigationService.InsertFeed(newFeedNavigation, cancellationToken);
 
         return oneInsertedOf.Match<IActionResult>
         (
             id =>
             {
                 _logger.LogCreated(id);
-                return Ok($"Feed with Id {id} was created successfully");
+                return Ok($"Feed with Id {id.ToString()} was created successfully");
             },
             notValidFeedNavigation =>
             {
@@ -86,18 +88,18 @@ public class FeedController : ControllerBase
             }
         );
     }
-
+    
     [HttpPut("Update")]
     public async Task<IActionResult> Update(FeedNavigation feedNavigation, CancellationToken cancellationToken = default)
     {
-        var oneUpdatedOf = await _feedService.UpdateFeed(feedNavigation, cancellationToken);
+        var oneUpdatedOf = await _feedNavigationService.UpdateFeed(feedNavigation, cancellationToken);
 
         return oneUpdatedOf.Match<IActionResult>
         (
             id =>
             {
                 _logger.LogUpdated(id);
-                return Ok($"Feed with Id {id} was updated successfully");
+                return Ok($"Feed with Id {id.ToString()} was updated successfully");
             },
             notValidFeedNavigation =>
             {
@@ -110,13 +112,13 @@ public class FeedController : ControllerBase
     [HttpPut("ResetDefault")]
     public async Task<IActionResult> ResetDefault(List<Guid> ids, CancellationToken cancellationToken = default)
     {
-        var oneUpdatedOf = await _feedService.ResetDefault(ids, cancellationToken);
+        var oneUpdatedOf = await _feedNavigationService.ResetDefault(ids, cancellationToken);
 
         return oneUpdatedOf.Match<IActionResult>
         (
             id =>
             {
-                _logger.LogDefaultReset(ids);
+                _logger.LogDefaultReset(string.Join(", ", ids).Replace(Environment.NewLine, ""));
                 return Ok($"Default feed's was successfully reset");
             },
             notValidFeedNavigation =>
@@ -131,7 +133,7 @@ public class FeedController : ControllerBase
     [HttpDelete("Delete")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
     {
-        var oneDeleteOf = await _feedService.DeleteFeed(id, cancellationToken);
+        var oneDeleteOf = await _feedNavigationService.DeleteFeed(id, cancellationToken);
 
         return oneDeleteOf.Match<IActionResult>
         (
@@ -140,10 +142,10 @@ public class FeedController : ControllerBase
                 if (success)
                 {
                     _logger.LogDeleted(id);
-                    return Ok($"Feed with Id {id} was deleted successfully");
+                    return Ok($"Feed with Id {id.ToString()} was deleted successfully");
                 }
 
-                return Ok($"Feed with Id {id} wasn't deleted");
+                return Ok($"Feed with Id {id.ToString()} wasn't deleted");
             },
             exceptionOccurred =>
             {

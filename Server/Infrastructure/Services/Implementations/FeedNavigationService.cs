@@ -10,22 +10,25 @@ using RssFeeder.Shared.Model;
 
 namespace RssFeeder.Server.Infrastructure.Services.Implementations;
 
-public class FeedService : IFeedService
+public class FeedNavigationService : IFeedNavigationService
 {
-    private readonly IFeedRepository _feedRepository;
+    private readonly IFeedNavigationRepository _feedNavigationRepository;
+    private readonly ILabelRepository _labelRepository;
     private readonly IExtractContent _extractContent;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IValidator<FeedNavigation> _feedNavigationValidator;
 
-    public FeedService
+    public FeedNavigationService
     (
-        IFeedRepository feedRepository,
+        IFeedNavigationRepository feedNavigationRepository,
+        ILabelRepository labelRepository,
         IExtractContent extractContent,
         IHttpClientFactory httpClientFactory,
         IValidator<FeedNavigation> feedNavigationValidator
     )
     {
-        _feedRepository = feedRepository;
+        _feedNavigationRepository = feedNavigationRepository;
+        _labelRepository = labelRepository;
         _extractContent = extractContent;
         _httpClientFactory = httpClientFactory;
         _feedNavigationValidator = feedNavigationValidator;
@@ -33,17 +36,18 @@ public class FeedService : IFeedService
 
     public async Task<List<FeedNavigation>> GetAllFeeds(CancellationToken cancellationToken)
     {
-        var items = await _feedRepository.GetAllFeeds(cancellationToken);
+        var items = await _feedNavigationRepository.GetAllFeeds(cancellationToken);
 
         return items.Select(x => new FeedNavigation
         {
             Id = x.Id,
             Href = x.Href,
             Title = x.Title,
-            Tags = x.Tags?.Select(tag => new FeedTag
+            FeedLabels = x.Labels?.Select(label => new FeedLabel
             {
-                Name = tag.Name,
-                Color = tag.Color
+                Id = label.Id,
+                Name = label.Name,
+                Color = label.Color
             }).ToList() ?? new(),
             Active = x.Default,
             Favorite = x.Favorite,
@@ -53,62 +57,79 @@ public class FeedService : IFeedService
 
     public async Task<OneOf<Guid, List<ValidationFailure>>> InsertFeed(FeedNavigation newFeedNavigation, CancellationToken cancellationToken)
     {
-        var validationResult = await _feedNavigationValidator.ValidateAsync(newFeedNavigation);
+        var validationResult = await _feedNavigationValidator.ValidateAsync(newFeedNavigation, cancellationToken);
 
         if (!validationResult.IsValid) return validationResult.Errors;
 
-        return await _feedRepository.InsertFeed(new FeedDto
+        var feedId = await _feedNavigationRepository.InsertFeed(new FeedDto
         {
-            Id = newFeedNavigation.Id,
+            GroupId = newFeedNavigation.GroupId,
             Href = newFeedNavigation.Href,
             Title = newFeedNavigation.Title,
-            Tags = newFeedNavigation.Tags?.Select(tag => new TagsDto
-            {
-                Id = tag.Id,
-                Name = tag.Name,
-                Color = tag.Color
-            }).ToList() ?? new(),
             Favorite = newFeedNavigation.Favorite,
             Default = newFeedNavigation.Default
         }, cancellationToken);
+
+        if (newFeedNavigation.FeedLabels?.Count > 0)
+        {
+            var labels = newFeedNavigation.FeedLabels.Select(label => new LabelDto
+            {
+                Name = label.Name,
+                Color = label.Color,
+            }).ToList();
+
+            await _labelRepository.InsertLabelsAsync(feedId, labels, cancellationToken);
+        }
+
+        return feedId;
     }
 
     public async Task<OneOf<Guid, List<ValidationFailure>>> UpdateFeed(FeedNavigation feedNavigation, CancellationToken cancellationToken)
     {
-        var validationResult = await _feedNavigationValidator.ValidateAsync(feedNavigation);
+        var validationResult = await _feedNavigationValidator.ValidateAsync(feedNavigation, cancellationToken);
 
         if (!validationResult.IsValid) return validationResult.Errors;
 
-        await _feedRepository.UpdateFeed(new FeedDto
+        var labelIdsToExclude = feedNavigation.FeedLabels?.Select(x => x.Id).ToList() ?? new();
+        
+        await _labelRepository.RemoveLabelsByFeedId(feedNavigation.Id, labelIdsToExclude, cancellationToken);
+        
+        await _feedNavigationRepository.UpdateFeed(new FeedDto
         {
             Id = feedNavigation.Id,
             Href = feedNavigation.Href,
             Title = feedNavigation.Title,
-            Tags = feedNavigation.Tags?.Select(tag => new TagsDto
-            {
-                Id = tag.Id,
-                Name = tag.Name,
-                Color = tag.Color
-            }).ToList() ?? new(),
             Favorite = feedNavigation.Favorite,
-            Default = feedNavigation.Default
+            Default = feedNavigation.Default,
+            ModifiedAt = DateTime.UtcNow
         }, cancellationToken);
+        
+        if (feedNavigation.FeedLabels?.Count > 0)
+        {
+            var labels = feedNavigation.FeedLabels.Select(label => new LabelDto
+            {
+                Name = label.Name,
+                Color = label.Color,
+            }).ToList();
 
+            await _labelRepository.InsertLabelsAsync(feedNavigation.Id, labels, cancellationToken);
+        }
+        
         return feedNavigation.Id;
     }
 
     public async Task<OneOf<bool, ValidationFailure>> ResetDefault(List<Guid> ids, CancellationToken cancellationToken)
     {
-        if (ids?.Count == 0) return new ValidationFailure("Ids", "Please provide Id's to reset.");
+        if (ids is null || ids.Count == 0) return new ValidationFailure("Ids", "Please provide Id's to reset.");
 
-        return await _feedRepository.ResetFeedDefault(ids, cancellationToken);
+        return await _feedNavigationRepository.ResetFeedDefault(ids, cancellationToken);
     }
 
     public async Task<OneOf<bool, Exception>> DeleteFeed(Guid feedId, CancellationToken cancellationToken)
     {
         try
         {
-            return await _feedRepository.DeleteFeed(feedId, cancellationToken);
+            return await _feedNavigationRepository.DeleteFeed(feedId, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -128,7 +149,7 @@ public class FeedService : IFeedService
             return new CustomHttpRequestException(response.StatusCode, response.ReasonPhrase);
         }
 
-        var xmlContent = await response.Content.ReadAsStringAsync();
+        var xmlContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
         if (string.IsNullOrEmpty(xmlContent))
         {

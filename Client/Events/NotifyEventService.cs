@@ -2,10 +2,16 @@
 
 public class NotifyEventService
 {
-    public event EventHandler? EventClick;
+    public event EventHandler? InvalidateFeedNavigationGroupClick;
+    public event EventHandler? InvalidateFeedNavigationClick;
 
-    public void NotifyEventClick(object sender)
+    public void NotifyFeedNavigationGroupClick(object sender)
     {
-        if (this.EventClick != null) this.EventClick(sender, EventArgs.Empty);
+        this.InvalidateFeedNavigationGroupClick?.Invoke(sender, EventArgs.Empty);
+    }
+    
+    public void NotifyFeedNavigationClick(object sender)
+    {
+        this.InvalidateFeedNavigationClick?.Invoke(sender, EventArgs.Empty);
     }
 }

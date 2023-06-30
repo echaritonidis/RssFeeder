@@ -6,7 +6,7 @@
             <img src="data:image/jpeg;base64,@feedContent.ImageBase64" />
             <h5>@feedContent.Title</h5>
             <p class="published"><i>Published on @feedContent.PubDate</i></p>
-            <p class="desc">@feedContent.Description</p>
+            <p class="desc">@((MarkupString)feedContent.Description)</p>
         </a>
     }
 }

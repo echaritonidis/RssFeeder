@@ -8,12 +8,12 @@
         <ModalBody>
             <Validations @ref="validations" Mode="ValidationMode.Manual">
 
-                @if (feedNavigation != null)
+                @if (feedNavigationToEdit != null)
                 {
                     <Field>
                         <FieldLabel>Title</FieldLabel>
                         <Validation Validator="ValidationRule.IsNotEmpty">
-                            <TextEdit @bind-Text="feedNavigation.Title">
+                            <TextEdit @bind-Text="feedNavigationToEdit.Title">
                                 <Feedback>
                                     <ValidationError>Enter valid title!</ValidationError>
                                 </Feedback>
@@ -23,7 +23,7 @@
                     <Field>
                         <FieldLabel>RSS link</FieldLabel>
                         <Validation Validator="ValidateHyperlink">
-                            <TextEdit @bind-Text="feedNavigation.Href">
+                            <TextEdit @bind-Text="feedNavigationToEdit.Href">
                                 <Feedback>
                                     <ValidationError>Enter valid RSS link!</ValidationError>
                                 </Feedback>
@@ -31,34 +31,36 @@
                         </Validation>
                     </Field>
                     <Field>
-                        <Check TValue="bool" @bind-Checked="@feedNavigation.Default">Default</Check>
+                        <Check TValue="bool" @bind-Checked="@feedNavigationToEdit.Default">Default</Check>
                     </Field>
                     <Field>
-                        <Check TValue="bool" @bind-Checked="@feedNavigation.Favorite">Favorite</Check>
+                        <Check TValue="bool" @bind-Checked="@feedNavigationToEdit.Favorite">Favorite</Check>
                     </Field>
                     <Field>
-                        <FieldLabel>Tags</FieldLabel>
+                        <FieldLabel>Labels</FieldLabel>
                         <Row>
                             <Column ColumnSize="ColumnSize.Is10">
-                                <TextEdit @bind-Text="tagName" Pattern="[A-Za-z]{3}">
+                                <TextEdit @bind-Text="labelName" KeyPress="OnKeyPressInLabel" Pattern="[A-Za-z]{3}">
                                     <Feedback>
-                                        <ValidationError>Enter valid title!</ValidationError>
+                                        <ValidationError>Enter valid label!</ValidationError>
                                     </Feedback>
                                 </TextEdit>
                             </Column>
                             <Column ColumnSize="ColumnSize.Is2">
-                                <Button Clicked="OnAddNewTag">
+                                <Button Clicked="OnAddNewLabel">
                                     <Icon Name="IconName.Add" />
                                 </Button>
                             </Column>
                         </Row>
 
-                        @if (feedNavigation.Tags != null)
+                        @if (feedNavigationToEdit.FeedLabels != null)
                         {
-                            foreach (var tag in feedNavigation.Tags)
-                            {
-                                <Badge Color="Color.Primary" CloseClicked="@(_ => OnBadgeClose(tag))">@tag.Name</Badge>
-                            }
+                            <div id="feed-labels">
+                                @foreach (var label in feedNavigationToEdit.FeedLabels)
+                                {
+                                    <Badge Color="Color.Primary" CloseClicked="@(_ => OnBadgeClose(label))">@label.Name</Badge>
+                                }
+                            </div>
                         }
 
                     </Field>

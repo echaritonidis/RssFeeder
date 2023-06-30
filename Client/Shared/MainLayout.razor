@@ -7,6 +7,10 @@
                 <NavMenu />
             </div>
         </div>
+        
+        <Alert Class="alert-error" Color="Color.Danger" Visible="@DisplayError">
+            <AlertMessage>@ErrorMessage</AlertMessage>
+        </Alert>
 
         <main id="main">
             @Body
