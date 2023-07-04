@@ -15,9 +15,6 @@
     <None Remove="Microsoft.AspNetCore.WebUtilities" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
   </ItemGroup>
 </Project>

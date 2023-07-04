@@ -1,9 +1,18 @@
 ﻿<div>
-    <AddFeedModalView @ref="addFeedModalViewRef" OnSuccessResponse="OnSaveResponse" />
-
     <a id="nav-logo" href="/">Rss Feeder</a>
-    <Button Float="Float.End" Clicked="OnAddFeed" Outline>
-        <Icon Name="IconName.Add" />
-        Add a feed
-    </Button>
+    
+    <Div Float="Float.End">
+        <Button Clicked="ShowFeedNavigationGroupCreateModal" Outline>
+            <Icon Name="IconName.Add" />
+            Group
+        </Button>
+    
+        <Button Clicked="ShowFeedNavigationCreateModal" Outline>
+            <Icon Name="IconName.Add" />
+            Subscribe
+        </Button>
+    </Div>
 </div>
+
+<AddFeedNavigationGroupModalView @ref="_addFeedNavigationGroupModalViewRef" OnSuccessResponse="OnSaveGroupResponse" />
+<AddFeedNavigationModalView @ref="_addFeedNavigationModalViewRef" GroupNames="FeedNavigationGroupNames" OnSuccessResponse="OnSaveFeedResponse" />

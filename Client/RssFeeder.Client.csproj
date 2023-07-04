@@ -14,8 +14,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.2.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.4" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.5" PrivateAssets="all" />
     <PackageReference Include="Blazorise.Bootstrap5" Version="1.2.2" />
     <PackageReference Include="Blazorise.SpinKit" Version="1.2.2" />
   </ItemGroup>
@@ -25,17 +25,26 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Blazorise.Bootstrap5" />
-    <None Remove="Microsoft.AspNetCore.WebUtilities" />
-    <None Remove="Events\" />
-    <None Remove="Shared\Feed\" />
-    <None Remove="Blazorise.SpinKit" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Remove="Shared\Components\AddFeedModal.razor" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Events\" />
-    <Folder Include="Shared\Feed\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Shared\Feed\AddFeedNavigationGroupModalView.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Feed\AddFeedNavigationModalView.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Feed\EditFeedModalView.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Feed\FeedContentView.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Feed\FeedNavGroupView.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Feed\FeedNavOption.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Feed\FeedNavView.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Pages\Feed\AddFeedNavigationGroupModalView.razor" />
+    <AdditionalFiles Include="Pages\Feed\AddFeedNavigationModalView.razor" />
+    <AdditionalFiles Include="Pages\Feed\EditFeedModalView.razor" />
+    <AdditionalFiles Include="Pages\Feed\FeedContentView.razor" />
+    <AdditionalFiles Include="Pages\Feed\FeedNavGroupView.razor" />
+    <AdditionalFiles Include="Pages\Feed\FeedNavOption.razor" />
+    <AdditionalFiles Include="Pages\Feed\FeedNavView.razor" />
   </ItemGroup>
 </Project>

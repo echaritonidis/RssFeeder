@@ -1,0 +1,29 @@
+﻿@if (Model != null)
+{
+    <ul>
+        @foreach (var feedNavigationGroup in Model.OrderByDescending(x => x.Initial).ThenByDescending(x => x.Order))
+        {
+            var extraClass = feedNavigationGroup.FeedNavigations?.Any(n => n.Active) != null ? "feed-group-item-active" : string.Empty;
+            
+            <li class="feed-group">
+                <div class="feed-group-item @extraClass">
+                    <p>@feedNavigationGroup.Title</p>
+                    
+                    <FeedNavView Model="@feedNavigationGroup.FeedNavigations"
+                                 OnMoreCallback="OnMoreClickAsync"
+                                 OnContentLoadingCallback="OnContentLoadingChange"
+                                 OnContentDataCallback="OnContentDataChange" />
+                </div>
+            </li>
+        }
+    </ul>
+    
+    <FeedNavOption @ref="_feedNavOptionRef"
+                   FeedItem="_selectedFeedItem"
+                   OnDefaultChangeCallback="OnDefaultToggle"
+                   OnFavoriteChangeCallback="OnFavoriteToggle"
+                   OnEditCallback="OnEditContext"
+                   OnDeleteCallback="OnDeleteRecord"/>
+    
+    <EditFeedModalView @ref="_editFeedModalViewRef" />
+}

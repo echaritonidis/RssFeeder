@@ -27,7 +27,7 @@
         public static partial void LogUpdatedError(this ILogger logger, string message);
 
         [LoggerMessage(EventId = 1008, Level = LogLevel.Debug, Message = "Default FeedNavigation id's: {ids} were reseted")]
-        public static partial void LogDefaultReset(this ILogger logger, List<Guid> ids);
+        public static partial void LogDefaultReset(this ILogger logger, string ids);
 
         [LoggerMessage(EventId = 1009, Level = LogLevel.Debug, Message = "Error occurred during default reset: {message}")]
         public static partial void LogDefaultResetError(this ILogger logger, string message);
