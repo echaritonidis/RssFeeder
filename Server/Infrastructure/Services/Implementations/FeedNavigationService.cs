@@ -156,6 +156,6 @@ public class FeedNavigationService : IFeedNavigationService
             return new NotFound();
         }
 
-        return _extractContent.GetContentItems(xmlContent);
+        return await _extractContent.GetContentItems(xmlContent);
     }
 }
