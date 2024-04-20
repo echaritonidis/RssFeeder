@@ -6,7 +6,7 @@ This is an RSS feed web app that allows users to import hyperlinks to RSS feeds 
 
 To build and run the RssFeeder, you'll need the following:
 
-- [.NET Core 7.0 SDK](https://dotnet.microsoft.com/download/dotnet-core/7.0)
+- [.NET Core 8.0 SDK](https://dotnet.microsoft.com/download/dotnet-core/8.0)
 - The `dotnet ef` tool, which can be installed using the following command: `dotnet tool install --global dotnet-ef` 
 
 Make sure to restart your command prompt or terminal after installing the `dotnet ef` tool.
@@ -23,7 +23,7 @@ Make sure to restart your command prompt or terminal after installing the `dotne
 
 ## Technologies
 
-- .NET 7
+- .NET 8
 - Blazor WebAssembly
 - C#
 - HTML/CSS/JavaScript
