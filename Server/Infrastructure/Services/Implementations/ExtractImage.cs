@@ -2,6 +2,8 @@
 using AngleSharp.Html.Parser;
 using RssFeeder.Server.Infrastructure.Services.Contracts;
 using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace RssFeeder.Server.Infrastructure.Services.Implementations
 {
