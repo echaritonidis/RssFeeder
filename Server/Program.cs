@@ -9,6 +9,8 @@ using RssFeeder.Shared.Model;
 using RssFeeder.Server.Infrastructure.Validators;
 using RssFeeder.Server.Infrastructure.Utils;
 using Asp.Versioning;
+using Marten;
+using Weasel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,9 +26,27 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 
-builder.Services.AddDbContext<DataContext>(options =>
+/* builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+}); */
+
+// This is the absolute, simplest way to integrate Marten into your
+// .NET application with Marten's default configuration
+builder.Services.AddMarten(options =>
+{
+    // Establish the connection string to your Marten database
+    options.Connection(builder.Configuration.GetConnectionString("DefaultConnection")!);
+
+    // Specify that we want to use STJ as our serializer
+    options.UseSystemTextJsonForSerialization();
+
+    // If we're running in development mode, let Marten just take care
+    // of all necessary schema building and patching behind the scenes
+    if (builder.Environment.IsDevelopment())
+    {
+        options.AutoCreateSchemaObjects = AutoCreate.All;
+    }
 });
 
 builder.Services.AddTransient(typeof(ISqLiteRepository<>), typeof(SqLiteRepository<>));
