@@ -8,14 +8,16 @@ namespace RssFeeder.Server.Infrastructure.Services.Implementations
 {
 	public class ExtractContent : IExtractContent
 	{
+        private readonly IExtractImage _extractImage;
         private readonly DateRegexUtil _dateRegexUtil;
 
-        public ExtractContent(DateRegexUtil dateRegexUtil)
+        public ExtractContent(IExtractImage extractImage, DateRegexUtil dateRegexUtil)
         {
+            _extractImage = extractImage;
             _dateRegexUtil = dateRegexUtil;
         }
 
-        public List<FeedContent> GetContentItems(string xmlContent)
+        public async Task<List<FeedContent>> GetContentItems(string xmlContent)
         {
             List<FeedContent> result = new();
 
@@ -47,6 +49,7 @@ namespace RssFeeder.Server.Infrastructure.Services.Implementations
                     {
                         Title = item.GetElement("title"),
                         Link = link,
+                        ImageBase64 = await _extractImage.GetImageBase64ByHref(link),
                         Description = item.GetElement("description"),
                         PubDate = pubDate
                     }

@@ -38,6 +38,8 @@ builder.Services.AddTransient<IFeedNavigationGroupService, FeedNavigationGroupSe
 builder.Services.AddTransient<IFeedNavigationService, FeedNavigationService>();
 
 builder.Services.AddTransient<IExtractContent, ExtractContent>();
+builder.Services.AddTransient<IExtractImage, ExtractImage>();
+
 builder.Services.AddSingleton<DateRegexUtil>();
 builder.Services.AddSingleton<LinkRegexUtil>();
 
