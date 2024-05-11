@@ -7,5 +7,5 @@ public record FeedGroup : BaseEntity
     public string Color { get; init; } = "#000";
     public int Order { get; init; }
     public bool Initial { get; init; }
-    public virtual List<Feed> Feeds { get; init; } = new();
+    public List<Feed> Feeds { get; init; } = new();
 }

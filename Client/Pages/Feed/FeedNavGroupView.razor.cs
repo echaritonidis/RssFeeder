@@ -64,7 +64,7 @@ public partial class FeedNavGroupView : IDisposable
         item.Favorite = !item.Favorite;
 
         // TODO: Add single action to update those bools instead of whole object
-        await _httpClient.PutAsJsonAsync("/api/v1.0/FeedNavigation/Update", item);
+        await _httpClient.PutAsJsonAsync("/api/v1.0/Feed/Update", item);
     }
 
     private async Task OnDefaultToggle(FeedNavigation item)
@@ -75,8 +75,8 @@ public partial class FeedNavGroupView : IDisposable
         // TODO: Add single action to update those bools instead of whole object
 
         // At first reset the Default of all elements
-        await _httpClient.PutAsJsonAsync("/api/v1.0/FeedNavigation/ResetDefault", Model?.Select(x => x.Id));
-        await _httpClient.PutAsJsonAsync("/api/v1.0/FeedNavigation/Update", item);
+        await _httpClient.PutAsJsonAsync("/api/v1.0/Feed/ResetDefault", Model?.Select(x => x.Id));
+        await _httpClient.PutAsJsonAsync("/api/v1.0/Feed/Update", item);
     }
 
     private async Task OnEditContext(FeedNavigation item)
@@ -92,7 +92,7 @@ public partial class FeedNavGroupView : IDisposable
 
         async Task SaveModalCallback(FeedNavigation updatedFeed)
         {
-            var updateResponse = await _httpClient.PutAsJsonAsync($"/api/v1.0/FeedNavigation/Update", updatedFeed);
+            var updateResponse = await _httpClient.PutAsJsonAsync($"/api/v1.0/Feed/Update", updatedFeed);
 
             if (updateResponse.IsSuccessStatusCode)
             {
@@ -121,7 +121,7 @@ public partial class FeedNavGroupView : IDisposable
             StateHasChanged();
         }
         
-        var deletedResponse = await _httpClient.DeleteAsync($"/api/v1.0/FeedNavigation/Delete?id={item.Id}");
+        var deletedResponse = await _httpClient.DeleteAsync($"/api/v1.0/Feed/Delete?id={item.Id}");
 
         if (deletedResponse.IsSuccessStatusCode)
         {

@@ -18,19 +18,26 @@ public class MartenRepository<TEntity> : IMartenRepository<TEntity> where TEntit
     
     public async Task Commit(CancellationToken cancellationToken) => await _documentSession.SaveChangesAsync(cancellationToken);
 
-    public Task<IReadOnlyList<TEntity>> GetAllAsync()
+    public Task<TEntity?> GetOnePredicatedAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
     {
-        return this._documentSession.LoadManyAsync<TEntity>(new List<string>());
+        return this._querySession.Query<TEntity>().Where(predicate).FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return this._querySession
+            .Query<TEntity>()
+            .ToListAsync(cancellationToken);
     }
 
     public Task<IReadOnlyList<TEntity>> GetAllPredicatedAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
     {
-        return this._documentSession.Query<TEntity>().Where(predicate).ToListAsync(cancellationToken);
+        return this._querySession.Query<TEntity>().Where(predicate).ToListAsync(cancellationToken);
     }
 
     public Task<IReadOnlyList<TEntity>> GetAllByIdsAsync(List<Guid> ids, CancellationToken cancellationToken)
     {
-        return this._documentSession.Query<TEntity>().Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
+        return this._querySession.Query<TEntity>().Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
     }
 
     public async Task<Guid> InsertAsync(TEntity obj, CancellationToken cancellationToken)
@@ -65,7 +72,7 @@ public class MartenRepository<TEntity> : IMartenRepository<TEntity> where TEntit
     public Task<bool> DeleteById(Guid entityId, CancellationToken cancellationToken)
     {
         _documentSession.HardDeleteWhere<TEntity>(x => x.Id == entityId);
-
+        
         return Task.FromResult(true);
     }
 
@@ -74,42 +81,5 @@ public class MartenRepository<TEntity> : IMartenRepository<TEntity> where TEntit
         _documentSession.HardDeleteWhere<TEntity>(x => entityIds.Contains(x.Id));
 
         return Task.FromResult(true);
-    }
-
-    public async Task<IReadOnlyList<TEntity>> GetAllWithRelatedDataAsync<TIncluded>(CancellationToken cancellationToken, Expression<Func<TEntity, object>> includeProperty)
-    {
-        return await _documentSession
-            .Query<TEntity>()
-            .Include(includeProperty, (TIncluded item) => {  })
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<IReadOnlyList<TEntity>> GetAllWithRelatedDataAsync(CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[]? includeProperties)
-    {
-        var query = _documentSession.Query<TEntity>();
-
-        if (includeProperties != null)
-        {
-            query = includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty, (object item) => {}));
-        }
-
-        return await query.ToListAsync(cancellationToken);
-    }
-
-    public async Task<TEntity?> GetByIdWithRelatedDataAsync(Guid entityId, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[]? includeProperties)
-    {
-        var query = _documentSession.Query<TEntity>().Where(x => x.Id == entityId);
-
-        if (includeProperties != null)
-        {
-            query = includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty, (object item) => {}));
-        }
-
-        return await query.SingleOrDefaultAsync(cancellationToken);
-    }
-
-    public Task<IReadOnlyList<TEntity>> GetAllWithRelatedDataAsync<TIncluded>(CancellationToken cancellationToken, Expression<Func<TEntity, IEnumerable<TIncluded>>> includeProperty)
-    {
-        throw new NotImplementedException();
     }
 }

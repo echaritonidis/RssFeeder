@@ -20,7 +20,7 @@ public partial class NavMenu
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await _httpClient.GetAsync("/api/v1.0/FeedNavigationGroup/GetGroupList");
+        var response = await _httpClient.GetAsync("/api/v1.0/FeedGroup/GetGroupList");
 
         if (response.IsSuccessStatusCode)
         {
@@ -31,7 +31,7 @@ public partial class NavMenu
     private async Task OnSaveGroupResponse(FeedNavigationGroup feedNavigationGroup)
     {
         // TODO: Do something with the response like show an alert
-        await _httpClient.PostAsJsonAsync<FeedNavigationGroup>("/api/v1.0/FeedNavigationGroup", feedNavigationGroup);
+        await _httpClient.PostAsJsonAsync<FeedNavigationGroup>("/api/v1.0/FeedGroup", feedNavigationGroup);
 
         _notifyEventService.NotifyFeedNavigationGroupClick(feedNavigationGroup);
     }
@@ -39,7 +39,7 @@ public partial class NavMenu
     private async Task OnSaveFeedResponse(FeedNavigation feedNavigation)
     {
         // TODO: Do something with the response like show an alert
-        await _httpClient.PostAsJsonAsync<FeedNavigation>("/api/v1.0/FeedNavigation", feedNavigation);
+        await _httpClient.PostAsJsonAsync<FeedNavigation>("/api/v1.0/Feed", feedNavigation);
 
         _notifyEventService.NotifyFeedNavigationClick(feedNavigation);
     }
