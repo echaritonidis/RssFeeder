@@ -48,15 +48,15 @@ public partial class FeedNavGroupView : IDisposable
         return Task.CompletedTask;
     }
 
-    private Task OnMoreClickAsync(MouseEventArgs e, FeedNavigation item)
+    private async Task OnMoreClickAsync(MouseEventArgs e, FeedNavigation item)
     {
         _selectedFeedItem = item;
 
         StateHasChanged();
-        
+
         var reference = _feedNavOptionRef.GetRef();
-        _jsRuntime.InvokeVoidAsync("updateContextPosition", new { className = "feed-context", x = e.PageX, y = e.PageY });
-        return reference.Show();
+        await _jsRuntime.InvokeVoidAsync("updateContextPosition", new { className = "feed-context", x = e.PageX, y = e.PageY });
+        await reference.Show();
     }
 
     private async Task OnFavoriteToggle(FeedNavigation item)
