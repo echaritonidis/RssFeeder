@@ -140,9 +140,11 @@ public class FeedService : IFeedService
         if (string.IsNullOrEmpty(href)) return new ValidationFailure("Href", "Href should not be empty.");
 
         var httpClient = _httpClientFactory.CreateClient();
+        httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
+
         var response = await httpClient.GetAsync(href, cancellationToken);
 
-        if (!response.IsSuccessStatusCode)
+         if (!response.IsSuccessStatusCode)
         {
             return new CustomHttpRequestException(response.StatusCode, response.ReasonPhrase);
         }

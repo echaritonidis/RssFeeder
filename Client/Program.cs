@@ -1,6 +1,7 @@
 using Blazorise;
-using Blazorise.Bootstrap5;
-using Blazorise.Icons.FontAwesome;
+using Blazorise.FluentUI2;
+using Blazorise.Icons.FluentUI;
+using Blazorise.Tailwind;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using RssFeeder.Client;
@@ -16,12 +17,13 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddScoped<NotifyEventService>();
 
 builder.Services
-    .AddBlazorise( options =>
+    .AddBlazorise(options =>
     {
         options.Immediate = true;
     })
-    .AddBootstrap5Providers()
-    .AddFontAwesomeIcons();
+    .AddTailwindProviders()
+    .AddFluentUI2Providers()
+    .AddFluentUIIcons();
 
 
 await builder.Build().RunAsync();
