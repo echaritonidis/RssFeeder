@@ -3,8 +3,6 @@ using System;
 using Blazorise;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Blazorise.Bootstrap5;
-using Blazorise.Icons.FontAwesome;
 using RichardSzalay.MockHttp;
 using RssFeeder.BlazorTests;
 using RssFeeder.Shared.Model;
@@ -12,6 +10,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using AngleSharp.Dom;
 using System.Linq;
+using Blazorise.Icons.FluentUI;
+using Blazorise.FluentUI2;
+using Blazorise.Tailwind;
 
 namespace BlazorTests
 {
@@ -31,8 +32,9 @@ namespace BlazorTests
             {
                 options.Immediate = true;
             })
-            .AddBootstrap5Providers()
-            .AddFontAwesomeIcons()
+            .AddTailwindProviders()
+            .AddFluentUI2Providers()
+            .AddFluentUIIcons()
             .Replace(ServiceDescriptor.Transient<IComponentActivator, ComponentActivator>());
 
             return mockHttpHandler;
