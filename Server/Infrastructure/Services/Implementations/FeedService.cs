@@ -90,9 +90,7 @@ public class FeedService : IFeedService
 
         if (!validationResult.IsValid) return validationResult.Errors;
 
-        var labelIdsToExclude = feedNavigation.FeedLabels?.Select(x => x.Id).ToList() ?? new();
-        
-        await _labelRepository.RemoveLabelsByFeedId(feedNavigation.Id, labelIdsToExclude, cancellationToken);
+        await _labelRepository.RemoveLabelsByFeedId(feedNavigation.Id, cancellationToken);
         
         await _feedRepository.UpdateFeed(new FeedDto
         {

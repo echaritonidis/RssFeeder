@@ -13,9 +13,9 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
             _repository = repository;
         }
 
-        public async Task<bool> RemoveLabelsByFeedId(Guid feedId, List<Guid> labelIdsToExclude, CancellationToken cancellationToken)
+        public async Task<bool> RemoveLabelsByFeedId(Guid feedId, CancellationToken cancellationToken)
         {
-            var labels = await _repository.GetAllPredicatedAsync(x => x.FeedId == feedId && !labelIdsToExclude.Contains(x.Id), cancellationToken);
+            var labels = await _repository.GetAllPredicatedAsync(x => x.FeedId == feedId, cancellationToken);
 
             if (labels.Count == 0) return true;
             
