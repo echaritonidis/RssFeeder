@@ -10,26 +10,26 @@ namespace RssFeeder.Server.Controllers.v1;
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
-public class FeedNavigationGroupController : ControllerBase
+public class FeedGroupController : ControllerBase
 {
-    private readonly ILogger<FeedNavigationGroupController> _logger;
-    private readonly IFeedNavigationGroupService _feedNavigationGroupService;
+    private readonly ILogger<FeedGroupController> _logger;
+    private readonly IFeedGroupService _feedGroupService;
     
-    public FeedNavigationGroupController
+    public FeedGroupController
     (
-        ILogger<FeedNavigationGroupController> logger,
-        IFeedNavigationGroupService feedNavigationGroupService
+        ILogger<FeedGroupController> logger,
+        IFeedGroupService feedGroupService
     )
     {
         _logger = logger;
-        _feedNavigationGroupService = feedNavigationGroupService;
+        _feedGroupService = feedGroupService;
     }
     
     [OutputCache(Duration = 3600)]
     [HttpGet("GetGroupList")]
     public async Task<IActionResult> GetGroupList(CancellationToken cancellationToken = default)
     {
-        var items = await _feedNavigationGroupService.GetGroupedNames(cancellationToken);
+        var items = await _feedGroupService.GetGroupedNames(cancellationToken);
 
         _logger.LogGetAll(items.Count);
 
@@ -40,7 +40,7 @@ public class FeedNavigationGroupController : ControllerBase
     [HttpGet("GetFeedGroups")]
     public async Task<IActionResult> GetFeedGroups(CancellationToken cancellationToken = default)
     {
-        var items = await _feedNavigationGroupService.GetGroupedFeeds(cancellationToken);
+        var items = await _feedGroupService.GetGroupedFeeds(cancellationToken);
 
         _logger.LogGetAll(items.Count);
 
@@ -50,7 +50,7 @@ public class FeedNavigationGroupController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(FeedNavigationGroup newFeedNavigationGroup, CancellationToken cancellationToken = default)
     {
-        var oneInsertedOf = await _feedNavigationGroupService.InsertGroup(newFeedNavigationGroup, cancellationToken);
+        var oneInsertedOf = await _feedGroupService.InsertGroup(newFeedNavigationGroup, cancellationToken);
 
         return oneInsertedOf.Match<IActionResult>
         (
@@ -70,7 +70,7 @@ public class FeedNavigationGroupController : ControllerBase
     [HttpPut("Update")]
     public async Task<IActionResult> Update(FeedNavigationGroup feedNavigationGroup, CancellationToken cancellationToken = default)
     {
-        var oneUpdatedOf = await _feedNavigationGroupService.UpdateGroup(feedNavigationGroup, cancellationToken);
+        var oneUpdatedOf = await _feedGroupService.UpdateGroup(feedNavigationGroup, cancellationToken);
 
         return oneUpdatedOf.Match<IActionResult>
         (
@@ -90,7 +90,7 @@ public class FeedNavigationGroupController : ControllerBase
     [HttpDelete("Delete")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
     {
-        var oneDeleteOf = await _feedNavigationGroupService.DeleteGroup(id, cancellationToken);
+        var oneDeleteOf = await _feedGroupService.DeleteGroup(id, cancellationToken);
 
         return oneDeleteOf.Match<IActionResult>
         (

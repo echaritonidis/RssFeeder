@@ -4,7 +4,7 @@ using RssFeeder.Shared.Model;
 
 namespace RssFeeder.Server.Infrastructure.Services.Contracts;
 
-public interface IFeedNavigationGroupService
+public interface IFeedGroupService
 {
     public Task<List<FeedNavigationGroupNames>> GetGroupedNames(CancellationToken cancellationToken);
     public Task<List<FeedNavigationGroup>> GetGroupedFeeds(CancellationToken cancellationToken);

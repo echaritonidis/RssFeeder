@@ -26,7 +26,7 @@ public partial class Index : IDisposable
         _notifyEventService.InvalidateFeedNavigationGroupClick += this.InvalidateFeedNavigationGroup;
         _notifyEventService.InvalidateFeedNavigationClick += this.InvalidateFeedNavigation;
         
-        var response = await _httpClient.GetAsync("/api/v1.0/FeedNavigationGroup/GetFeedGroups");
+        var response = await _httpClient.GetAsync("/api/v1.0/FeedGroup/GetFeedGroups");
 
         if (response.IsSuccessStatusCode)
         {
@@ -57,7 +57,7 @@ public partial class Index : IDisposable
     
     // protected async Task ExportExcel()
     // {
-    //     var result = await _httpClient.PostAsJsonAsync("/api/v1.0/FeedNavigation/ExportExcel", FeedContents);
+    //     var result = await _httpClient.PostAsJsonAsync("/api/v1.0/Feed/ExportExcel", FeedContents);
     //
     //     if (result.IsSuccessStatusCode)
     //     {

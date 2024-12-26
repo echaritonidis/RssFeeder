@@ -1,5 +1,4 @@
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using RssFeeder.Server.Infrastructure.Database;
 using RssFeeder.Server.Infrastructure.Repositories.Contracts;
 using RssFeeder.Server.Infrastructure.Repositories.Implementations;
@@ -9,6 +8,11 @@ using RssFeeder.Shared.Model;
 using RssFeeder.Server.Infrastructure.Validators;
 using RssFeeder.Server.Infrastructure.Utils;
 using Asp.Versioning;
+using Marten;
+using Weasel.Core;
+using Marten.Services;
+using RssFeeder.Server.Infrastructure.Model;
+using Weasel.Postgresql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,19 +27,44 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddRazorPages();
 
-
-builder.Services.AddDbContext<DataContext>(options =>
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
+builder.Services.AddNpgsqlDataSource(connectionString);
+builder.Services.AddMarten(options =>
 {
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+    // Establish the connection string to your Marten database
+    options.Connection(connectionString);
+    
+    // Specify that we want to use STJ as our serializer
+    options.UseSystemTextJsonForSerialization();
+    options.Serializer(new JsonNetSerializer { EnumStorage = EnumStorage.AsString });
 
-builder.Services.AddTransient(typeof(ISqLiteRepository<>), typeof(SqLiteRepository<>));
+    // If we're running in development mode, let Marten just take care
+    // of all necessary schema building and patching behind the scenes
+    if (builder.Environment.IsDevelopment())
+    {
+        options.AutoCreateSchemaObjects = AutoCreate.CreateOrUpdate;
+        options.Logger(new ConsoleMartenLogger());
+    }
+
+    options.Schema
+        .For<Feed>()
+        .ForeignKey<FeedGroup>(x => x.FeedGroupId, fkd => fkd.OnDelete = CascadeAction.Cascade);
+    options.Schema
+        .For<Label>()
+        .ForeignKey<Feed>(x => x.FeedId, fkd => fkd.OnDelete = CascadeAction.Cascade);
+})
+.InitializeWith(new InitialData(InitialDatasets.FeedGroups))
+.UseLightweightSessions()
+.UseNpgsqlDataSource();
+
+// builder.Services.AddTransient(typeof(ISqLiteRepository<>), typeof(SqLiteRepository<>));
+builder.Services.AddTransient(typeof(IMartenRepository<>), typeof(MartenRepository<>));
 builder.Services.AddTransient<ILabelRepository, LabelRepository>();
-builder.Services.AddTransient<IFeedNavigationGroupRepository, FeedNavigationGroupRepository>();
-builder.Services.AddTransient<IFeedNavigationRepository, FeedNavigationRepository>();
+builder.Services.AddTransient<IFeedGroupRepository, FeedGroupRepository>();
+builder.Services.AddTransient<IFeedRepository, FeedRepository>();
 
-builder.Services.AddTransient<IFeedNavigationGroupService, FeedNavigationGroupService>();
-builder.Services.AddTransient<IFeedNavigationService, FeedNavigationService>();
+builder.Services.AddTransient<IFeedGroupService, FeedGroupService>();
+builder.Services.AddTransient<IFeedService, FeedService>();
 
 builder.Services.AddTransient<IExtractContent, ExtractContent>();
 builder.Services.AddTransient<IExtractImage, ExtractImage>();

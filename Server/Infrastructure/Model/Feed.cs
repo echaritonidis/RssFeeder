@@ -9,6 +9,5 @@ public record Feed : BaseEntity
     public bool Favorite { get; init; }
     public bool Default { get; init; }
     public Guid FeedGroupId { get; init; }
-    public virtual FeedGroup FeedGroup { get; init; }
-    public virtual List<Label>? Labels { get; init; }
+    public List<Label>? Labels { get; init; }
 }

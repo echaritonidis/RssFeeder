@@ -1,21 +1,24 @@
-﻿using RssFeeder.Server.Infrastructure.Dto;
+﻿using Marten;
+using RssFeeder.Server.Infrastructure.Dto;
 using RssFeeder.Server.Infrastructure.Model;
 using RssFeeder.Server.Infrastructure.Repositories.Contracts;
 
 namespace RssFeeder.Server.Infrastructure.Repositories.Implementations;
 
-public class FeedNavigationGroupRepository : IFeedNavigationGroupRepository
+public class FeedGroupRepository : IFeedGroupRepository
 {
-    private readonly ISqLiteRepository<FeedGroup> _repository;
+    private readonly IMartenRepository<FeedGroup> _repository;
+    private readonly IQuerySession _querySession;
 
-    public FeedNavigationGroupRepository(ISqLiteRepository<FeedGroup> repository)
+    public FeedGroupRepository(IMartenRepository<FeedGroup> repository, IQuerySession querySession)
     {
         _repository = repository;
+        _querySession = querySession;
     }
     
     public async Task<List<FeedGroupDto>> GetGroupNames(CancellationToken cancellationToken)
     {
-        var items = await _repository.GetAllWithRelatedDataAsync(noTracking: true, cancellationToken);
+        var items = await _repository.GetAllAsync(cancellationToken);
 
         return items.Select(g => new FeedGroupDto
         {
@@ -27,9 +30,17 @@ public class FeedNavigationGroupRepository : IFeedNavigationGroupRepository
 
     public async Task<List<FeedGroupDto>> GetGroupFeeds(CancellationToken cancellationToken)
     {
-        var items = await _repository.GetAllWithRelatedDataAsync<Feed>(noTracking: true, cancellationToken, o => o.Feeds, f => f.Labels);
+        var feedGroups = await _repository.GetAllAsync(cancellationToken);
+        var feedGroupIds = feedGroups.Select(x => x.Id).ToList();
+        
+        // Retrieve all Feeds
+        var feeds = _querySession.Query<Feed>().Where(x => feedGroupIds.Contains(x.FeedGroupId)).ToList();
+        var feedIds = feeds.Select(x => x.Id).ToList();
 
-        return items.Select(g => new FeedGroupDto
+        // Retrieve all labels
+        var labels = _querySession.Query<Label>().Where(x => feedIds.Contains(x.FeedId)).ToList();
+
+        return feedGroups.Select(g => new FeedGroupDto
         {
             Id = g.Id,
             Title = g.Title,
@@ -37,14 +48,14 @@ public class FeedNavigationGroupRepository : IFeedNavigationGroupRepository
             Color = g.Color,
             Order = g.Order,
             Initial = g.Initial,
-            Feeds = g.Feeds.Select(x => new FeedDto
+            Feeds = feeds?.Where(f => f.FeedGroupId == g.Id).Select(x => new FeedDto
             {
                 Id = x.Id,
                 Title = x.Title,
                 Href = x.Href,
                 Default = x.Default,
                 Favorite = x.Favorite,
-                Labels = x.Labels?.Select(label => new LabelDto
+                Labels = labels?.Where(l => l.FeedId == x.Id).Select(label => new LabelDto
                 {
                     Id = label.Id,
                     Name = label.Name,
@@ -71,7 +82,7 @@ public class FeedNavigationGroupRepository : IFeedNavigationGroupRepository
    
     public async Task UpdateFeedGroup(FeedGroupDto feedGroup, CancellationToken cancellationToken)
     {
-        var item = await _repository.GetByIdWithRelatedDataAsync(feedGroup.Id, noTracking: true, cancellationToken, o => o.Feeds);
+        var item = await _repository.GetOnePredicatedAsync(x => x.Id == feedGroup.Id, cancellationToken);
 
         if (item is null) return;
                 

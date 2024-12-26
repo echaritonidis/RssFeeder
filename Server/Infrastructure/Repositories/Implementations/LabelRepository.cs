@@ -6,16 +6,16 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
 {
 	public class LabelRepository : ILabelRepository
 	{
-        private readonly ISqLiteRepository<Label> _repository;
+        private readonly IMartenRepository<Label> _repository;
 
-        public LabelRepository(ISqLiteRepository<Label> repository)
+        public LabelRepository(IMartenRepository<Label> repository)
         {
             _repository = repository;
         }
 
-        public async Task<bool> RemoveLabelsByFeedId(Guid feedId, List<Guid> labelIdsToExclude, CancellationToken cancellationToken)
+        public async Task<bool> RemoveLabelsByFeedId(Guid feedId, CancellationToken cancellationToken)
         {
-            var labels = await _repository.GetAllPredicatedAsync(x => x.FeedId == feedId && !labelIdsToExclude.Contains(x.Id), noTracking: true, cancellationToken);
+            var labels = await _repository.GetAllPredicatedAsync(x => x.FeedId == feedId, cancellationToken);
 
             if (labels.Count == 0) return true;
             

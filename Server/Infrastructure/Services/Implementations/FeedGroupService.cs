@@ -8,24 +8,24 @@ using RssFeeder.Shared.Model;
 
 namespace RssFeeder.Server.Infrastructure.Services.Implementations;
 
-public class FeedNavigationGroupService : IFeedNavigationGroupService
+public class FeedGroupService : IFeedGroupService
 {
-    private readonly IFeedNavigationGroupRepository _feedNavigationGroupRepository;
-    private readonly IValidator<FeedNavigationGroup> _feedNavigationGroupValidator;
+    private readonly IFeedGroupRepository _feedGroupRepository;
+    private readonly IValidator<FeedNavigationGroup> _feedGroupValidator;
 
-    public FeedNavigationGroupService
+    public FeedGroupService
     (
-        IFeedNavigationGroupRepository feedNavigationGroupRepository,
-        IValidator<FeedNavigationGroup> feedNavigationGroupValidator
+        IFeedGroupRepository feedGroupRepository,
+        IValidator<FeedNavigationGroup> feedGroupValidator
     )
     {
-        _feedNavigationGroupRepository = feedNavigationGroupRepository;
-        _feedNavigationGroupValidator = feedNavigationGroupValidator;
+        _feedGroupRepository = feedGroupRepository;
+        _feedGroupValidator = feedGroupValidator;
     }
     
     public async Task<List<FeedNavigationGroupNames>> GetGroupedNames(CancellationToken cancellationToken)
     {
-        var items = await _feedNavigationGroupRepository.GetGroupNames(cancellationToken);
+        var items = await _feedGroupRepository.GetGroupNames(cancellationToken);
 
         return items.Select(x => new FeedNavigationGroupNames
         {
@@ -37,7 +37,7 @@ public class FeedNavigationGroupService : IFeedNavigationGroupService
 
     public async Task<List<FeedNavigationGroup>> GetGroupedFeeds(CancellationToken cancellationToken)
     {
-        var items = await _feedNavigationGroupRepository.GetGroupFeeds(cancellationToken);
+        var items = await _feedGroupRepository.GetGroupFeeds(cancellationToken);
 
         return items.Select(x => new FeedNavigationGroup
         {
@@ -67,11 +67,11 @@ public class FeedNavigationGroupService : IFeedNavigationGroupService
 
     public async Task<OneOf<Guid, List<ValidationFailure>>> InsertGroup(FeedNavigationGroup newFeedGroup, CancellationToken cancellationToken)
     {
-        var validationResult = await _feedNavigationGroupValidator.ValidateAsync(newFeedGroup, cancellationToken);
+        var validationResult = await _feedGroupValidator.ValidateAsync(newFeedGroup, cancellationToken);
 
         if (!validationResult.IsValid) return validationResult.Errors;
 
-        return await _feedNavigationGroupRepository.InsertFeedGroup(new FeedGroupDto
+        return await _feedGroupRepository.InsertFeedGroup(new FeedGroupDto
         {
             Id = newFeedGroup.Id,
             Title = newFeedGroup.Title,
@@ -83,11 +83,11 @@ public class FeedNavigationGroupService : IFeedNavigationGroupService
     
     public async Task<OneOf<Guid, List<ValidationFailure>>> UpdateGroup(FeedNavigationGroup feedGroup, CancellationToken cancellationToken)
     {
-        var validationResult = await _feedNavigationGroupValidator.ValidateAsync(feedGroup, cancellationToken);
+        var validationResult = await _feedGroupValidator.ValidateAsync(feedGroup, cancellationToken);
 
         if (!validationResult.IsValid) return validationResult.Errors;
         
-        await _feedNavigationGroupRepository.UpdateFeedGroup(new FeedGroupDto
+        await _feedGroupRepository.UpdateFeedGroup(new FeedGroupDto
         {
             Id = feedGroup.Id,
             Title = feedGroup.Title,
@@ -103,7 +103,7 @@ public class FeedNavigationGroupService : IFeedNavigationGroupService
     {
         try
         {
-            return await _feedNavigationGroupRepository.DeleteFeedGroup(feedGroupId, cancellationToken);
+            return await _feedGroupRepository.DeleteFeedGroup(feedGroupId, cancellationToken);
         }
         catch (Exception ex)
         {

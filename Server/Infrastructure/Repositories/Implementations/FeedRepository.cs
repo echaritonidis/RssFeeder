@@ -4,20 +4,20 @@ using RssFeeder.Server.Infrastructure.Repositories.Contracts;
 
 namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
 {
-	public class FeedNavigationRepository : IFeedNavigationRepository
+	public class FeedRepository : IFeedRepository
 	{
-        private readonly ISqLiteRepository<Feed> _repository;
+        private readonly IMartenRepository<Feed> _repository;
 
-        public FeedNavigationRepository(ISqLiteRepository<Feed> repository)
+        public FeedRepository(IMartenRepository<Feed> repository)
         {
             _repository = repository;
         }
 
         public async Task<List<FeedDto>> GetAllFeeds(CancellationToken cancellationToken)
         {
-            var items = await _repository.GetAllWithRelatedDataAsync(noTracking: true, cancellationToken, o => o.Labels);
+            var feeds = await _repository.GetAllAsync(cancellationToken);
 
-            return items.Select(x => new FeedDto
+            return feeds.Select(x => new FeedDto
             {
                 Id = x.Id,
                 Title = x.Title,
@@ -54,7 +54,7 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
 
         public async Task UpdateFeed(FeedDto feed, CancellationToken cancellationToken)
         {
-            var item = await _repository.GetByIdWithRelatedDataAsync(feed.Id, noTracking: true, cancellationToken, o => o.Labels);
+            var item = await _repository.GetOnePredicatedAsync(x => x.Id == feed.Id, cancellationToken);
 
             if (item is null) return;
 
@@ -72,9 +72,18 @@ namespace RssFeeder.Server.Infrastructure.Repositories.Implementations
 
         public async Task<bool> ResetFeedDefault(List<Guid> ids, CancellationToken cancellationToken)
         {
-            var items = await _repository.GetAllByIdsAsync(ids, noTracking: true, cancellationToken);
-            var updateItems = items.Select(i => i with { Default = false }).ToList();
-            return ids.Count == (await _repository.UpdateRangeAsync(updateItems, cancellationToken));
+            try
+            {
+                var items = await _repository.GetAllByIdsAsync(ids, cancellationToken);
+                var updateItems = items.Select(i => i with { Default = false }).ToList();
+                await _repository.UpdateRangeAsync(updateItems, cancellationToken);
+
+                return true;
+            }
+            catch 
+            {
+                return false;
+            }
         }
 
         public Task<bool> DeleteFeed(Guid feedId, CancellationToken cancellationToken)

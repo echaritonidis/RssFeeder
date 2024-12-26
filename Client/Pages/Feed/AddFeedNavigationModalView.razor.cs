@@ -19,8 +19,11 @@ public partial class AddFeedNavigationModalView
 
     public Task ShowModal()
     {
-        feedNavigation = new();
         selectedFeedNavigationGroup = GroupNames?.FirstOrDefault(g => g.Initial);
+        feedNavigation = new()
+        {
+            GroupId = selectedFeedNavigationGroup?.Id ?? Guid.Empty
+        };
         labelName = string.Empty;
         validations.ClearAll();
 

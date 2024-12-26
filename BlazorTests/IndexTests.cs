@@ -44,7 +44,7 @@ namespace BlazorTests
             using var ctx = new TestContext();
             {
                 var mockHttpHandler = this.Setup(ctx);
-                mockHttpHandler.When("/api/v1.0/FeedNavigationGroup/GetFeedGroups").RespondJson(new List<FeedNavigationGroup>
+                mockHttpHandler.When("/api/v1.0/FeedGroup/GetFeedGroups").RespondJson(new List<FeedNavigationGroup>
                 {
                     new()
                     {
@@ -79,7 +79,7 @@ namespace BlazorTests
                     }
                 });
                 
-                mockHttpHandler.When("/api/v1.0/FeedNavigation/GetContent").RespondJson(new List<FeedContent>
+                mockHttpHandler.When("/api/v1.0/Feed/GetContent").RespondJson(new List<FeedContent>
                 {
                     new()
                     {

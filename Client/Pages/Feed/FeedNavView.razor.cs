@@ -1,8 +1,5 @@
-﻿using System.Net.Http.Json;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.JSInterop;
-using RssFeeder.Client.Shared;
 using RssFeeder.Shared.Extensions;
 using RssFeeder.Shared.Model;
 
@@ -44,7 +41,7 @@ public partial class FeedNavView
                 ["href"] = feedNavigation.Href
             };
 
-            var feedContents = await _httpClient.GetFromJsonWithParamsAsync<List<FeedContent>>("/api/v1.0/FeedNavigation/GetContent", queryParams);
+            var feedContents = await _httpClient.GetFromJsonWithParamsAsync<List<FeedContent>>("/api/v1.0/Feed/GetContent", queryParams);
             await OnContentDataCallback(feedContents);
         }
         finally
