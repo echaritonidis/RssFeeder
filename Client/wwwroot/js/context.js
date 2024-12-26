@@ -1,7 +1,10 @@
 ﻿function updateContextPosition(op) {
     const element = document.querySelector(`.${op.className}`);
-    element.style.left = `${op.x}px`;
-    element.style.top = `${op.y}px`;
+
+    if (element) {
+        element.style.left = `${op.x}px`;
+        element.style.top = `${op.y}px`;
+    }
 }
 
 function bindDomChanges() {
