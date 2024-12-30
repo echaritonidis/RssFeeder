@@ -13,6 +13,7 @@ using System.Linq;
 using Blazorise.Icons.FluentUI;
 using Blazorise.FluentUI2;
 using Blazorise.Tailwind;
+using System.Net;
 
 namespace BlazorTests
 {
@@ -80,7 +81,9 @@ namespace BlazorTests
                         }
                     }
                 });
-                
+
+                mockHttpHandler.When("/api/v1.0/Feed/ResetDefault").Respond(HttpStatusCode.Created);
+
                 mockHttpHandler.When("/api/v1.0/Feed/GetContent").RespondJson(new List<FeedContent>
                 {
                     new()
