@@ -69,7 +69,7 @@ public class FeedController : ControllerBase
         );
     }
 
-    [HttpPost]
+    [HttpPost("Create")]
     public async Task<IActionResult> Create(FeedNavigation newFeedNavigation, CancellationToken cancellationToken = default)
     {
         var oneInsertedOf = await _feedService.InsertFeed(newFeedNavigation, cancellationToken);
